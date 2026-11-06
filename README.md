@@ -85,7 +85,7 @@ El despliegue **no está activado**. Para hacerlo:
 3. **Actions → «Prisma (actualizar y publicar)» → Run workflow** sobre `main`. La primera vez no hay histórico y empieza de cero.
 4. Cuando el resultado le convenza, descomente el bloque `schedule` de `.github/workflows/pipeline.yml` (`17 */2 * * *`) para que se actualice cada 2 horas.
 
-La URL será `https://xacoy.github.io/PrismaNews/`. El workflow mide el tiempo de cada paso y lo deja en el resumen de cada ejecución. Aviso: en repos públicos GitHub **desactiva los workflows programados tras 60 días sin actividad** en el repositorio; un push de vez en cuando lo evita (si se desactiva, se reactiva a mano en Actions).
+La URL será `https://xacoy.github.io/PrismaNews/`. El workflow mide el tiempo de cada paso y lo deja en el resumen de cada ejecución. Medido en GitHub Actions (6 nov 2026, 20 feeds, ~1.300 titulares): **~50 s por ejecución en régimen normal** (el pipeline en sí, 9,5 s: los vectores de los titulares ya vistos se guardan en la caché de Actions y solo se calculan los nuevos) y 95–120 s en frío (primera ejecución o caché caducada; ahí los embeddings tardan unos 48 s). El sitio pesa ~0,8 MB. Aviso: en repos públicos GitHub **desactiva los workflows programados tras 60 días sin actividad** en el repositorio; un push de vez en cuando lo evita (si se desactiva, se reactiva a mano en Actions).
 
 ## Límites de los servicios gratuitos que condicionan el diseño
 
