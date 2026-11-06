@@ -20,11 +20,14 @@ def new_group_id(articles: list[Article]) -> str:
     return "g" + hashlib.sha1(oldest.id.encode()).hexdigest()[:10]
 
 
-def assign_ids(new: list[list[Article]], prev: list[dict], min_overlap: float = 0.5) -> list[str]:
+def assign_ids(new: list[list[Article]], prev: list[dict], min_overlap: float = 0.5,
+               reserved: set[str] | None = None) -> list[str]:
     """Hereda el id del grupo previo con más artículos en común (coeficiente de solapamiento >= 0.5).
 
     Cada id previo se usa una sola vez (emparejamiento voraz por solapamiento descendente).
-    Si dos grupos previos se fusionan, hereda el id el más antiguo.
+    Si dos grupos previos se fusionan, hereda el id el más antiguo. Si un grupo se parte, un trozo
+    conserva el id y los demás reciben ids nuevos; nunca se repite un id (ni uno ya heredado ni
+    uno de `reserved`, p. ej. los grupos antiguos que se conservan sin tocar).
     """
     prev_sets = [({a["id"] for a in g["articles"]}, g["id"], g["first_published"]) for g in prev]
     cands = []
@@ -43,7 +46,17 @@ def assign_ids(new: list[list[Article]], prev: list[dict], min_overlap: float = 
         if out[ni] is None and pi not in used:
             out[ni] = prev_sets[pi][1]
             used.add(pi)
-    return [o or new_group_id(new[i]) for i, o in enumerate(out)]
+    taken = {o for o in out if o} | set(reserved or ())
+    for i, o in enumerate(out):
+        if o is None:
+            gid, k = new_group_id(new[i]), 0
+            while gid in taken:  # id ya en uso (p. ej. el otro trozo de un grupo partido): se deriva otro estable
+                k += 1
+                oldest = min(new[i], key=lambda a: (a.published, a.id))
+                gid = "g" + hashlib.sha1(f"{oldest.id}:{k}".encode()).hexdigest()[:10]
+            out[i] = gid
+            taken.add(gid)
+    return out  # type: ignore[return-value]
 
 
 def trend(arts: list[Article], now: datetime, hours: int) -> dict:
