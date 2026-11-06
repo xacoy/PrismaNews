@@ -1,0 +1,177 @@
+# Comprobado con scripts/check_sources.py desde un runner de GitHub Actions (2026-11-06).
+- name: ABC
+  url: https://www.abc.es/rss/2.0/portada/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 25
+  newest_age_h: 0.5
+- name: El País
+  url: https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 141
+  newest_age_h: 0.8
+- name: El Mundo
+  url: https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 22
+  newest_age_h: 0.2
+- name: La Razón
+  url: https://www.larazon.es/?outputType=xml
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 186
+  newest_age_h: 0.1
+- name: La Vanguardia
+  url: https://www.lavanguardia.com/rss/home.xml
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 146
+  newest_age_h: 0.5
+- name: El Confidencial
+  url: https://rss.elconfidencial.com/espana/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 15
+  newest_age_h: 0.4
+- name: elDiario.es
+  url: https://www.eldiario.es/rss/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 104
+  newest_age_h: 0.3
+- name: 20minutos
+  url: https://www.20minutos.es/rss/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 188
+  newest_age_h: 0.5
+- name: El Español
+  url: https://www.elespanol.com/rss/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 30
+  newest_age_h: 0.1
+- name: Público
+  url: https://www.publico.es/rss/
+  scope: nacional
+  status: descartado
+  checked: '2026-11-06'
+  reason: /rss/, /rss/portada y /rss/actualidad devuelven HTTP 404; falta localizar el feed vigente
+- name: OKDiario
+  url: https://okdiario.com/feed
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 50
+  newest_age_h: 0.1
+- name: infoLibre
+  url: https://www.infolibre.es/rss/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 54
+  newest_age_h: 1.0
+- name: El Debate
+  url: https://www.eldebate.com/rss/home.xml
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 130
+  newest_age_h: 0.3
+- name: The Objective
+  url: https://theobjective.com/feed/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 20
+  newest_age_h: 0.0
+- name: Expansión
+  url: https://e00-expansion.uecdn.es/rss/portada.xml
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 72
+  newest_age_h: 30.8
+- name: Cinco Días
+  url: https://feeds.elpais.com/mrss-s/pages/ep/site/cincodias.elpais.com/portada
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 83
+  newest_age_h: 0.7
+- name: Newtral
+  url: https://www.newtral.es/feed/
+  scope: nacional
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 10
+  newest_age_h: 17.7
+- name: RTVE
+  url: https://www.rtve.es/api/noticias.rss
+  scope: nacional
+  status: descartado
+  checked: '2026-11-06'
+  reason: robots.txt prohíbe esta ruta; no se usa
+- name: Canarias7
+  url: https://www.canarias7.es/rss/2.0/?section=
+  scope: canario
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 100
+  newest_age_h: 1.2
+- name: La Provincia
+  url: https://www.laprovincia.es/rss/
+  scope: canario
+  status: descartado
+  checked: '2026-11-06'
+  reason: HTTP 406 en /rss/ y /rss/section/1 (rechaza al cliente automático, incluso con Accept */*)
+- name: El Día
+  url: https://www.eldia.es/rss/
+  scope: canario
+  status: descartado
+  checked: '2026-11-06'
+  reason: HTTP 406 en /rss/ y /rss/section/1 (rechaza al cliente automático, incluso con Accept */*)
+- name: Diario de Avisos
+  url: https://diariodeavisos.elespanol.com/feed/
+  scope: canario
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 20
+  newest_age_h: 0.1
+- name: La Opinión de Tenerife
+  url: https://www.laopinion.es/rss/
+  scope: canario
+  status: descartado
+  checked: '2026-11-06'
+  reason: HTTP 406 en /rss/ y /rss/section/1 (rechaza al cliente automático, incluso con Accept */*)
+- name: Canarias Ahora
+  url: https://www.eldiario.es/rss/canariasahora/
+  scope: canario
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 97
+  newest_age_h: 0.2
+- name: Atlántico Hoy
+  url: https://www.atlanticohoy.com/uploads/feeds/feed_atlantico-hoy_es.xml
+  scope: canario
+  status: activo
+  checked: '2026-11-06'
+  entries_seen: 15
+  newest_age_h: 0.1
+- name: RTVC
+  url: https://www.rtvc.es/feed/
+  scope: canario
+  status: descartado
+  checked: '2026-11-06'
+  reason: /feed/ y /rss/ sin entradas; /rss/feed.xml HTTP 404
