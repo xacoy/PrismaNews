@@ -1,0 +1,24 @@
+name: Informe edición Canarias (puntual)
+
+# Revisión de la regla de Canarias sobre los datos ya publicados. Sin cron.
+on:
+  push:
+    branches: [claude/sharp-ride-ov3q5l]
+    paths: [scripts/canarias_report.py, pipeline/prisma/canarias.py, .github/workflows/canarias-informe.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  informe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r pipeline/requirements.txt
+      - run: curl -sSfL -o groups.json https://xacoy.github.io/PrismaNews/data/groups.json
+      - run: python scripts/canarias_report.py groups.json

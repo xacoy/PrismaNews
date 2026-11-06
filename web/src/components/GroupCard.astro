@@ -1,31 +1,72 @@
 ---
 import type { Group } from '../lib/types';
-import { href, fmtDate, plural, trendLabel } from '../lib/format';
-import Spectrum from './Spectrum.astro';
-import SourceChip from './SourceChip.astro';
+import { href, fmtDate, plural, trendLabel, colorVars } from '../lib/format';
+import { buildSlides } from '../lib/slides';
 interface Props { g: Group; featured?: boolean }
 const { g, featured = false } = Astro.props;
-const shown = g.sources.slice(0, featured ? 10 : 6);
-const extra = g.sources.length - shown.length;
-const image = g.image;
+const slides = buildSlides(g);
+const n = slides.length;
+const imageOf = (s: (typeof slides)[number], i: number) => s.image ?? (i === 0 ? g.image : null);
+const anyImage = slides.some((s, i) => !!imageOf(s, i)); // si algún medio trae imagen, todas las diapositivas reservan el mismo hueco
 ---
-<article class={`group relative rounded-2xl border border-line bg-surface p-4 sm:p-5 transition-colors hover:border-accent ${featured ? 'sm:p-7' : ''}`}>
-  {image && (
-    <div class="img-box mb-3 overflow-hidden rounded-xl" style="aspect-ratio:16/9">
-      <img src={image} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="360" class="h-full w-full object-cover" data-hide-on-error />
-    </div>
-  )}
-  <Spectrum sources={g.sources} />
-  <h2 class={`headline mt-3 ${featured ? 'text-[1.7rem] sm:text-4xl' : 'text-[1.25rem] sm:text-[1.35rem]'}`}>
-    <a href={href(`grupo/${g.id}/`)} class="after:absolute after:inset-0 after:content-[''] hover:underline">{g.headline}</a>
-  </h2>
+<article data-card class={`rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-accent sm:p-5 ${featured ? 'sm:p-7' : ''}`}>
+  <!-- Espectro: una franja por medio; al pulsarla se muestra el titular de ese medio -->
+  <div class="spectrum" role="group" aria-label="Medios que cubren esta noticia">
+    {slides.map((s, i) => (
+      <button type="button" class="seg src" style={colorVars(s.source)} data-go={i} aria-label={`Ver el titular de ${s.source}`} title={s.source} aria-current={i === 0 ? 'true' : undefined}></button>
+    ))}
+  </div>
+
+  <div class="slides mt-3" data-slides tabindex="0" role="group" aria-roledescription="carrusel" aria-label="Titular de cada medio">
+    {slides.map((s, i) => {
+      const image = imageOf(s, i);
+      return (
+        <div class="slide src" style={colorVars(s.source)} data-slide={i} role="group" aria-roledescription="diapositiva" aria-label={`${i + 1} de ${n}: ${s.source}`}>
+          {anyImage && (
+            <div class="img-box mb-3 overflow-hidden rounded-xl" style="aspect-ratio:16/9">
+              {image ? (
+                <img {...(i === 0 ? { src: image } : { 'data-src': image })} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="360" class="h-full w-full object-cover" data-hide-on-error />
+              ) : (
+                <div class="ph" aria-hidden="true"><span class="headline">{s.source}</span></div>
+              )}
+            </div>
+          )}
+          <p class="flex items-center gap-1.5 text-[13px] text-muted">
+            <span class="dot inline-block h-2 w-2 rounded-full" aria-hidden="true"></span>
+            <strong class="font-semibold text-ink">{s.source}</strong>
+            <span aria-hidden="true">·</span>
+            <time datetime={s.published}>{fmtDate(s.published)}</time>
+            {i === 0 && <><span aria-hidden="true">·</span><span>titular representativo</span></>}
+          </p>
+          {i === 0 ? (
+            <h2 class={`headline mt-1 ${featured ? 'text-[1.7rem] sm:text-4xl' : 'text-[1.25rem] sm:text-[1.35rem]'}`}>
+              <a href={href(`grupo/${g.id}/`)} class="hover:underline">{s.title}</a>
+            </h2>
+          ) : (
+            <p class={`headline mt-1 ${featured ? 'text-[1.7rem] sm:text-4xl' : 'text-[1.25rem] sm:text-[1.35rem]'}`}>
+              <a href={href(`grupo/${g.id}/`)} class="hover:underline">{s.title}</a>
+            </p>
+          )}
+          <p class="mt-2 text-sm">
+            <a href={s.url} rel="noopener noreferrer" class="text-accent underline">Leer en {s.source} <span aria-hidden="true">↗</span></a>
+          </p>
+        </div>
+      );
+    })}
+  </div>
+
+  <div class="tabs mt-3 flex gap-x-1 overflow-x-auto pb-1" data-tabs>
+    {slides.map((s, i) => (
+      <button type="button" class="tab src" style={colorVars(s.source)} data-go={i} aria-current={i === 0 ? 'true' : undefined}>
+        <span class="dot inline-block h-2 w-2 rounded-full" aria-hidden="true"></span>{s.source}
+      </button>
+    ))}
+  </div>
+
   <p class="mt-2 text-sm text-muted">
     <strong class="font-semibold text-ink">{plural(g.source_count, 'medio', 'medios')}</strong>
     {' · '}<time datetime={g.last_published} data-rel>{fmtDate(g.last_published)}</time>
     {' · '}<span title={`${g.trend.recent} titulares en las últimas horas frente a ${g.trend.previous} en las anteriores`}>{trendLabel[g.trend.state]}</span>
-  </p>
-  <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
-    {shown.map((s) => <SourceChip name={s} />)}
-    {extra > 0 && <span class="text-[13px] text-muted">+{extra} más</span>}
+    {' · '}<a class="underline hover:text-ink" href={href(`grupo/${g.id}/`)}>Ver toda la cobertura</a>
   </p>
 </article>

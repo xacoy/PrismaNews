@@ -60,3 +60,35 @@ a { text-underline-offset: 3px; }
 
 /* Hueco de la imagen enlazada: si no carga, se ve un fondo suave en vez de un salto de maquetación. */
 .img-box { background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 18%, var(--bg)), var(--surface)); }
+
+/* ── Carrusel de titulares por medio ─────────────────────────────── */
+.slides {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none; position: relative; border-radius: 0.75rem;
+}
+.slides::-webkit-scrollbar { display: none; }
+.slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+
+/* Franjas del espectro como botones: área táctil amplia, franja visible fina. */
+.spectrum { gap: 3px; height: auto; border-radius: 0; overflow: visible; }
+.spectrum > .seg { position: relative; flex: 1; height: 8px; padding: 0; border: 0; border-radius: 999px; background: var(--c); opacity: .5; cursor: pointer; transition: opacity .15s, height .15s; }
+.spectrum > .seg::before { content: ""; position: absolute; inset: -10px 0; } /* hit area */
+.spectrum > .seg:hover { opacity: .85; }
+.spectrum > .seg[aria-current="true"] { opacity: 1; height: 10px; }
+
+.tabs { scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: none; display: inline-flex; align-items: center; gap: .4rem; min-height: 32px; padding: 0 .7rem; border: 1px solid transparent;
+  border-radius: 999px; background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-current="true"] { color: var(--ink); border-color: var(--c); background: color-mix(in oklab, var(--c) 14%, transparent); }
+.tab[aria-current="true"] .dot { box-shadow: 0 0 0 3px color-mix(in oklab, var(--c) 30%, transparent); }
+
+[data-card] { min-width: 0; max-width: 100%; }
+
+/* Tarjeta tipográfica: sin imagen, el nombre del medio sobre su color (mismo hueco que las que sí traen imagen). */
+.ph { display: grid; place-items: center; width: 100%; height: 100%; text-align: center; padding: 1rem;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--c) 30%, var(--bg)), color-mix(in oklab, var(--c) 8%, var(--surface))); }
+.ph > span { font-size: clamp(1.5rem, 6vw, 2.2rem); color: var(--ink); opacity: .9; }

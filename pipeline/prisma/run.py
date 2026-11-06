@@ -18,7 +18,7 @@ import yaml
 from . import cluster as cl
 from .embed import DEFAULT_MODEL, Embedder, VectorCache, article_vectors
 from .fetch import fetch_all, load_sources
-from .groups import articles_of, assign_ids, make_group
+from .groups import articles_of, assign_ids, make_group, refresh_editions
 from .models import Article, iso, parse_iso
 from .normalize import dedupe, strip_accents
 
@@ -111,6 +111,7 @@ def run(args) -> dict:
                   for gid, idxs in zip(ids, publish)]
 
     keep_after = now - timedelta(days=cfg["history_days"])
+    frozen = [refresh_editions(g) for g in frozen]
     groups = [g for g in frozen + new_groups if parse_iso(g["last_published"]) >= keep_after]
     groups.sort(key=lambda g: (g["source_count"], g["last_published"]), reverse=True)
 

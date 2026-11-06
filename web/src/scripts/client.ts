@@ -32,6 +32,46 @@ document.addEventListener('error', (e) => {
   if (el instanceof HTMLImageElement && el.hasAttribute('data-hide-on-error')) el.style.visibility = 'hidden'; // conserva el hueco: sin saltos de maquetación
 }, true);
 
+// ── Carrusel de titulares por medio ──────────────────────────────────
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function loadSlideImage(slide: Element | undefined) {
+  slide?.querySelectorAll<HTMLImageElement>('img[data-src]').forEach((img) => { img.src = img.dataset.src!; img.removeAttribute('data-src'); });
+}
+function setActive(card: HTMLElement, idx: number) {
+  const slides = card.querySelector<HTMLElement>('[data-slides]')!;
+  const items = [...slides.children] as HTMLElement[];
+  items.forEach((el, i) => { el.toggleAttribute('inert', i !== idx); el.setAttribute('aria-hidden', i === idx ? 'false' : 'true'); });
+  card.querySelectorAll<HTMLElement>('[data-go]').forEach((b) => {
+    const on = Number(b.dataset.go) === idx;
+    if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+  });
+  const tabs = card.querySelector<HTMLElement>('[data-tabs]');
+  const tab = tabs?.querySelector<HTMLElement>(`[data-go="${idx}"]`);
+  if (tabs && tab) tabs.scrollTo({ left: tab.offsetLeft - (tabs.clientWidth - tab.clientWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
+  loadSlideImage(items[idx]); loadSlideImage(items[idx + 1]);
+}
+function indexOf(slides: HTMLElement) { return Math.round(slides.scrollLeft / Math.max(1, slides.clientWidth)); }
+
+document.querySelectorAll<HTMLElement>('[data-card]').forEach((card) => {
+  const slides = card.querySelector<HTMLElement>('[data-slides]');
+  if (!slides) return;
+  setActive(card, 0);
+  let raf = 0;
+  slides.addEventListener('scroll', () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => setActive(card, indexOf(slides)));
+  }, { passive: true });
+});
+document.addEventListener('click', (e) => {
+  const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-go]');
+  const card = btn?.closest<HTMLElement>('[data-card]');
+  const slides = card?.querySelector<HTMLElement>('[data-slides]');
+  if (!btn || !card || !slides) return;
+  const idx = Number(btn.dataset.go);
+  setActive(card, idx);
+  slides.scrollTo({ left: idx * slides.clientWidth, behavior: reduceMotion ? 'auto' : 'smooth' });
+});
+
 // Service worker (solo en producción) con la subruta correcta
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   const base = root.dataset.base ?? '/';
