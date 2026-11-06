@@ -78,8 +78,21 @@ jobs:
           fi
           ls -la prev
 
+      # Vectores de los titulares ya vistos: así solo se calculan los nuevos (el cálculo domina el tiempo).
+      - name: Caché de embeddings
+        uses: actions/cache/restore@v4
+        with:
+          path: embcache
+          key: prisma-emb-none
+          restore-keys: prisma-emb-
+
       - name: Recoger, agrupar y exportar
-        run: python -m prisma.run --prev-dir prev --out-dir web/public/data
+        run: python -m prisma.run --prev-dir prev --out-dir web/public/data --emb-cache embcache
+
+      - uses: actions/cache/save@v4
+        with:
+          path: embcache
+          key: prisma-emb-${{ github.run_id }}
 
       - name: Validar datos
         run: python -m prisma.validate web/public/data

@@ -16,7 +16,7 @@ from pathlib import Path
 import yaml
 
 from . import cluster as cl
-from .embed import DEFAULT_MODEL, Embedder, article_vectors
+from .embed import DEFAULT_MODEL, Embedder, VectorCache, article_vectors
 from .fetch import fetch_all, load_sources
 from .groups import articles_of, assign_ids, make_group
 from .models import Article, iso, parse_iso
@@ -87,9 +87,12 @@ def run(args) -> dict:
     embedder = Embedder(cfg["embedding"].get("model", DEFAULT_MODEL), cache_dir=os.environ.get("FASTEMBED_CACHE"))
     timings["modelo_carga_s"] = round(time.time() - t, 1)
     t = time.time()
-    vecs = article_vectors(pool, embedder, cfg["embedding"]["title_weight"], cfg["embedding"]["summary_weight"])
+    vcache = VectorCache(str(Path(args.emb_cache) / "vectors.npz") if getattr(args, "emb_cache", None) else None)
+    vecs, estats = article_vectors(pool, embedder, cfg["embedding"]["title_weight"], cfg["embedding"]["summary_weight"],
+                                   cache=vcache, model=cfg["embedding"]["model"])
     timings["embeddings_s"] = round(time.time() - t, 1)
-    print(f"embeddings: {len(pool)} artículos ({timings['embeddings_s']} s, carga {timings['modelo_carga_s']} s)", flush=True)
+    print(f"embeddings: {estats['new']} nuevos + {estats['cached']} en caché ({timings['embeddings_s']} s, "
+          f"carga del modelo {timings['modelo_carga_s']} s)", flush=True)
 
     t = time.time()
     labels = cl.cluster_titles(vecs, [a.title for a in pool], cfg["threshold"], cfg["rules"], cfg.get("linkage", "average"))
@@ -127,7 +130,8 @@ def run(args) -> dict:
         "schema_version": SCHEMA_VERSION, "generated_at": iso(now), "model": cfg["embedding"]["model"],
         "threshold": cfg["threshold"], "timings": timings,
         "counts": {"articles_fresh": len(fresh), "pool": len(pool), "groups": len(groups),
-                   "groups_new_or_updated": len(new_groups), "groups_frozen": len(frozen)},
+                   "groups_new_or_updated": len(new_groups), "groups_frozen": len(frozen),
+                   "embeddings_new": estats["new"], "embeddings_cached": estats["cached"]},
         "feeds": reports,
     }
     (out / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -141,6 +145,7 @@ def main(argv=None):
     p.add_argument("--config", default="config/clustering.yml")
     p.add_argument("--prev-dir", default=None, help="carpeta con groups.json y pool.json de la ejecución anterior")
     p.add_argument("--out-dir", default="web/public/data")
+    p.add_argument("--emb-cache", default=None, help="carpeta donde guardar/leer vectors.npz (caché de embeddings)")
     p.add_argument("--snapshot", default=None, help="solo descarga y vuelca los artículos a este JSON")
     run(p.parse_args(argv))
 

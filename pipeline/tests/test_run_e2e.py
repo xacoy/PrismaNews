@@ -13,7 +13,7 @@ def setup(monkeypatch, fake, fresh):
 
 
 def args(tmp_path, prev=None, name="out"):
-    return SimpleNamespace(sources="x", config="config/clustering.yml", prev_dir=prev, out_dir=str(tmp_path / name), snapshot=None)
+    return SimpleNamespace(sources="x", config="config/clustering.yml", prev_dir=prev, out_dir=str(tmp_path / name), snapshot=None, emb_cache=None)
 
 
 def test_dos_ejecuciones_conservan_id_y_pool(tmp_path, monkeypatch, fake):

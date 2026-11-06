@@ -73,7 +73,8 @@ def test_make_group_campos_y_enlaces(fake):
 
 def test_vectores_mezclan_resumen(fake):
     a = [mk("A", "Plan de vivienda", summary="medidas para jóvenes"), mk("B", "Otro asunto")]
-    v = article_vectors(a, fake, 0.7, 0.3)
+    v, st = article_vectors(a, fake, 0.7, 0.3)
+    assert st == {"new": 2, "cached": 0}
     assert v.shape == (2, 256) and abs(np.linalg.norm(v[0]) - 1) < 1e-5
 
 
@@ -88,3 +89,38 @@ def test_enlace_configurable(fake):
     t = ["plan vivienda joven uno", "plan vivienda joven dos", "plan vivienda joven tres"]
     for m in ("average", "weighted", "single"):
         assert len(set(cl.cluster_titles(fake.encode(t), t, 0.5, {}, m))) == 1
+
+
+def test_cache_de_vectores_solo_calcula_lo_nuevo(fake, tmp_path):
+    from prisma.embed import VectorCache
+
+    class Contador:
+        def __init__(self, inner): self.inner, self.n = inner, 0
+        def encode(self, texts):
+            self.n += len(texts)
+            return self.inner.encode(texts)
+
+    emb = Contador(fake)
+    path = str(tmp_path / "vectors.npz")
+    a = [mk("A", "Plan de vivienda", summary="medidas"), mk("B", "Otro asunto")]
+    v1, s1 = article_vectors(a, emb, 0.7, 0.3, cache=VectorCache(path), model="m")
+    assert s1 == {"new": 2, "cached": 0}
+    n1 = emb.n
+    # segunda ejecución con un artículo nuevo: solo se calcula ese
+    b = a + [mk("C", "Erupción en La Palma")]
+    v2, s2 = article_vectors(b, emb, 0.7, 0.3, cache=VectorCache(path), model="m")
+    assert s2 == {"new": 1, "cached": 2} and emb.n == n1 + 1
+    assert np.allclose(v1, v2[:2], atol=1e-2)            # float16: pequeña pérdida de precisión
+    # si cambia el modelo (o los pesos), se recalcula todo
+    _, s3 = article_vectors(b, emb, 0.7, 0.3, cache=VectorCache(path), model="otro")
+    assert s3["new"] == 3
+    # la caché se poda: solo conserva lo que está en el pool actual
+    article_vectors(a[:1], emb, 0.7, 0.3, cache=VectorCache(path), model="otro")
+    assert len(VectorCache(path).vectors) == 1
+
+
+def test_cache_ilegible_se_descarta(tmp_path):
+    from prisma.embed import VectorCache
+    p = tmp_path / "vectors.npz"
+    p.write_bytes(b"no es un npz")
+    assert VectorCache(str(p)).vectors == {}
