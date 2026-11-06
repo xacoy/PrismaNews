@@ -2,7 +2,8 @@
 window_hours: 48        # ventana móvil de agrupación
 history_days: 14        # cuánto histórico se conserva
 min_sources: 2          # medios distintos mínimos para publicar un grupo
-threshold: 0.78         # similitud coseno mínima media entre titulares del grupo (enlace medio)
+threshold: 0.78         # similitud coseno mínima (según el enlace) para unir titulares
+linkage: average        # average | weighted | single
 embedding:
   model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
   title_weight: 0.7     # peso del embedding del titular
@@ -11,5 +12,7 @@ rules:
   entity_veto_below: 0.88   # si no comparten entidades y la similitud es menor, no se agrupan
   number_veto_below: 0.93   # si las cifras/fechas son distintas y la similitud es menor, no se agrupan
   exclude_live: true        # directos, crónicas y resúmenes del día no se agrupan
+  entity_boost: 0.0         # bonus de similitud por entidades compartidas (0 = desactivado)
+  short_title_words: 5      # titulares de menos palabras solo se agrupan si la similitud es >= 0,95
 trend:
   window_hours: 6           # sube/baja: artículos de las últimas 6 h frente a las 6 h previas

@@ -51,3 +51,14 @@ def test_pick_headline_evita_el_dramatico_y_prefiere_el_central():
     v /= np.linalg.norm(v, axis=1, keepdims=True)
     assert pick_headline(titles, v) in (1, 2)
     assert pick_headline(titles, v) != 0
+
+
+def test_veto_titular_corto():
+    cfg = {**CFG, "short_title_words": 5}
+    assert rules.veto("A Manuel González Plata", "Toñi Roque González", 0.865, cfg) == "titular_corto"
+    assert rules.veto("A Manuel González Plata", "Toñi Roque González", 0.97, cfg) is None
+
+
+def test_shared_entities():
+    assert rules.shared_entities({"urda", "adif"}, {"urda", "uco"}) == 1
+    assert rules.shared_entities({"canarias"}, {"canario"}) == 1

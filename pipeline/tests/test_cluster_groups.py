@@ -75,3 +75,16 @@ def test_vectores_mezclan_resumen(fake):
     a = [mk("A", "Plan de vivienda", summary="medidas para jóvenes"), mk("B", "Otro asunto")]
     v = article_vectors(a, fake, 0.7, 0.3)
     assert v.shape == (2, 256) and abs(np.linalg.norm(v[0]) - 1) < 1e-5
+
+
+def test_bonus_de_entidades_une_titulares_con_pocas_palabras_comunes(fake):
+    t = ["La Fiscalía Europea investiga fraude Adif Urda", "Operación de la UCO por Urda: reclaman documentación a Adif"]
+    sin = cl.cluster_titles(fake.encode(t), t, 0.55, {})
+    con = cl.cluster_titles(fake.encode(t), t, 0.55, {"entity_boost": 0.3})
+    assert sin[0] != sin[1] and con[0] == con[1]
+
+
+def test_enlace_configurable(fake):
+    t = ["plan vivienda joven uno", "plan vivienda joven dos", "plan vivienda joven tres"]
+    for m in ("average", "weighted", "single"):
+        assert len(set(cl.cluster_titles(fake.encode(t), t, 0.5, {}, m))) == 1

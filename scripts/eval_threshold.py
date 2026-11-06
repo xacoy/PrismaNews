@@ -26,7 +26,9 @@ pairs = ev.load_pairs(a.pairs)
 pos = sum(p["label"] for p in pairs)
 print(f"{len(pairs)} pares etiquetados ({pos} mismo asunto, {len(pairs) - pos} distinto)")
 emb = Embedder(cfg["embedding"]["model"], cache_dir=os.environ.get("FASTEMBED_CACHE"))
-rows = ev.sweep(pairs, emb, cfg["rules"], a.bins)
+emb = ev.CachedEmbedder(emb)
+cfg_link = cfg.get("linkage", "average")
+rows = ev.sweep(pairs, emb, cfg["rules"], a.bins, linkage_method=cfg_link)
 
 print("\nMétricas PONDERADAS por tramo (estimación sobre todos los pares entre medios distintos)")
 print(f"{'umbral':>6} | {'coseno P/C':>13} | {'cluster P/C':>13} | {'cluster+reglas P/C/F1':>23} | sin ponderar P/C")
@@ -43,9 +45,23 @@ if best:
 else:
     print("Ningún umbral alcanza la precisión pedida.")
 
+print("\n== Variantes (enlace x bonus por entidades), mejor umbral con precisión ponderada >=", a.min_precision)
+print(f"{'enlace':>9} {'bonus':>5} | {'umbral':>6} | {'prec':>5} {'cob':>5} {'F1':>5} | sin ponderar P/C")
+for link in ("average", "weighted", "single"):
+    for bonus in (0.0, 0.05, 0.10, 0.15, 0.20):
+        rc = {**cfg["rules"], "entity_boost": bonus}
+        rws = ev.sweep(pairs, emb, rc, a.bins, linkage_method=link)
+        b = ev.recommend(rws, "cluster+reglas", a.min_precision)
+        if b:
+            k = b["cluster+reglas"]
+            print(f"{link:>9} {bonus:>5.2f} | {b['threshold']:>6.2f} | {k['precision']:.2f} {k['recall']:.2f} {k['f1']:.2f} | "
+                  f"{k['precision_sin_ponderar']:.2f} / {k['recall_sin_ponderar']:.2f}")
+        else:
+            print(f"{link:>9} {bonus:>5.2f} | ninguno")
+
 # Errores del umbral actual, para revisar a mano
 from prisma.evaluate import predict  # noqa: E402
-pred = predict(pairs, emb, cfg["threshold"], cfg["rules"], "cluster")
+pred = predict(pairs, emb, cfg["threshold"], cfg["rules"], "cluster", cfg_link)
 print("\nFalsos positivos (agrupados sin deber) con el umbral actual:")
 for p, y in zip(pairs, pred):
     if y and not p["label"]:

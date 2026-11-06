@@ -92,7 +92,7 @@ def run(args) -> dict:
     print(f"embeddings: {len(pool)} artículos ({timings['embeddings_s']} s, carga {timings['modelo_carga_s']} s)", flush=True)
 
     t = time.time()
-    labels = cl.cluster_titles(vecs, [a.title for a in pool], cfg["threshold"], cfg["rules"])
+    labels = cl.cluster_titles(vecs, [a.title for a in pool], cfg["threshold"], cfg["rules"], cfg.get("linkage", "average"))
     clusters = cl.groups_from_labels(labels)
     timings["clustering_s"] = round(time.time() - t, 1)
 

@@ -60,6 +60,11 @@ def entities_overlap(a: set[str], b: set[str]) -> bool:
     return False
 
 
+def shared_entities(a: set[str], b: set[str]) -> int:
+    """Cuántas entidades de `a` aparecen también en `b` (exactas o con el mismo prefijo de 5 letras)."""
+    return sum(1 for x in a if any(x == y or (len(x) >= 5 and len(y) >= 5 and x[:5] == y[:5]) for y in b))
+
+
 def numbers(title: str) -> set[str]:
     out = set()
     for m in _NUM.findall(title):
@@ -74,10 +79,12 @@ def is_live(title: str) -> bool:
 
 def veto(title_a: str, title_b: str, sim: float, cfg: dict) -> str | None:
     """Devuelve el motivo por el que dos titulares NO deben agruparse, o None."""
+    if cfg.get("short_title_words") and sim < 0.95 and min(len(title_a.split()), len(title_b.split())) < cfg["short_title_words"]:
+        return "titular_corto"
     ea, eb = entities(title_a), entities(title_b)
-    if ea and eb and sim < cfg["entity_veto_below"] and not entities_overlap(ea, eb):
+    if ea and eb and sim < cfg.get("entity_veto_below", 0.0) and not entities_overlap(ea, eb):
         return "entidades"
     na, nb = numbers(title_a), numbers(title_b)
-    if na and nb and sim < cfg["number_veto_below"] and not (na <= nb or nb <= na):
+    if na and nb and sim < cfg.get("number_veto_below", 0.0) and not (na <= nb or nb <= na):
         return "cifras"
     return None

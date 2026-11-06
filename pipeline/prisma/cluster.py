@@ -10,7 +10,8 @@ from . import rules
 VETO_DISTANCE = 1.5  # distancia asignada a pares vetados (la distancia coseno normal está en [0, 2])
 
 
-def cluster_titles(emb: np.ndarray, titles: list[str], threshold: float, rules_cfg: dict | None = None) -> list[int]:
+def cluster_titles(emb: np.ndarray, titles: list[str], threshold: float, rules_cfg: dict | None = None,
+                   linkage_method: str = "average") -> list[int]:
     """Etiqueta de cluster por elemento. Los titulares de directos/crónicas quedan solos."""
     n = len(titles)
     if n == 0:
@@ -19,7 +20,20 @@ def cluster_titles(emb: np.ndarray, titles: list[str], threshold: float, rules_c
         return [1]
     rules_cfg = rules_cfg or {}
     sim = emb @ emb.T
-    dist = np.clip(1.0 - sim, 0.0, 2.0)
+    boost = rules_cfg.get("entity_boost", 0.0)
+    if boost:
+        # las entidades compartidas (personas, lugares, organizaciones) acercan los titulares
+        ents = [rules.entities(t) for t in titles]
+        ii, jj = np.where(np.triu(sim >= threshold - 0.25, k=1))
+        adj = sim.copy()
+        for i, j in zip(ii, jj):
+            k = rules.shared_entities(ents[i], ents[j])
+            if k:
+                adj[i, j] = adj[j, i] = min(1.0, sim[i, j] + boost * min(k, 3) / 3)
+        sim_for_dist = adj
+    else:
+        sim_for_dist = sim
+    dist = np.clip(1.0 - sim_for_dist, 0.0, 2.0)
     np.fill_diagonal(dist, 0.0)
 
     if rules_cfg:
@@ -35,7 +49,7 @@ def cluster_titles(emb: np.ndarray, titles: list[str], threshold: float, rules_c
                 dist[i, j] = dist[j, i] = VETO_DISTANCE
         np.fill_diagonal(dist, 0.0)
 
-    z = linkage(squareform(dist, checks=False), method="average")
+    z = linkage(squareform(dist, checks=False), method=linkage_method)
     return fcluster(z, t=1.0 - threshold, criterion="distance").tolist()
 
 
