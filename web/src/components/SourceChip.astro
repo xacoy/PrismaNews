@@ -1,0 +1,8 @@
+---
+import { colorVars } from '../lib/format';
+interface Props { name: string; class?: string }
+const { name, class: cls = '' } = Astro.props;
+---
+<span class={`src inline-flex items-center gap-1.5 text-[13px] text-muted ${cls}`} style={colorVars(name)}>
+  <span class="dot inline-block h-2 w-2 rounded-full" aria-hidden="true"></span>{name}
+</span>

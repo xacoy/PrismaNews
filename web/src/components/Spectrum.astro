@@ -1,0 +1,8 @@
+---
+import { colorVars } from '../lib/format';
+interface Props { sources: string[] }
+const { sources } = Astro.props;
+---
+<div class="spectrum" aria-hidden="true">
+  {sources.map((s) => <span class="src" style={colorVars(s)} />)}
+</div>

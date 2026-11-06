@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SourceChip from '../../components/SourceChip.astro';
+import { data, groupsBySource } from '../../lib/data';
+import { href, plural, fmtDate } from '../../lib/format';
+const by = groupsBySource();
+const rows = data.sources
+  .map((s) => {
+    const gs = (by.get(s.name) ?? []).slice().sort((a, b) => b.last_published.localeCompare(a.last_published));
+    return { ...s, groups: gs };
+  })
+  .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+const nat = rows.filter((r) => r.scope === 'nacional');
+const can = rows.filter((r) => r.scope === 'canario');
+---
+<Layout title="Medios · Prisma" description="Los medios cuyos titulares recoge Prisma y en cuántas noticias aparecen.">
+  <div class="mx-auto max-w-3xl px-4 pb-16 pt-6">
+    <h1 class="headline text-3xl sm:text-4xl">Medios</h1>
+    <p class="mt-3 max-w-2xl text-muted">Prisma recoge los titulares públicos (RSS/Atom) de {data.sources.length} medios. No los puntúa ni los clasifica: esta página solo cuenta en cuántas noticias agrupadas aparece cada uno. Los colores sirven únicamente para distinguirlos entre sí.</p>
+    {[['Medios nacionales', nat], ['Medios canarios', can]].map(([title, list]) => (
+      <section class="mt-8">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">{title as string} · {(list as typeof rows).length}</h2>
+        <ul class="mt-3 divide-y divide-line rounded-2xl border border-line bg-surface">
+          {(list as typeof rows).map((r) => (
+            <li class="p-4">
+              <details>
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-3">
+                  <SourceChip name={r.name} class="!text-base font-semibold !text-ink" />
+                  <span class="text-sm text-muted">{plural(r.groups.length, 'noticia agrupada', 'noticias agrupadas')}</span>
+                </summary>
+                {r.groups.length === 0 && <p class="mt-3 text-sm text-muted">Sin noticias agrupadas en el periodo guardado.</p>}
+                <ul class="mt-3 space-y-2 text-sm">
+                  {r.groups.slice(0, 5).map((g) => (
+                    <li><a class="underline" href={href(`grupo/${g.id}/`)}>{g.headline}</a> <span class="text-muted">· {fmtDate(g.last_published)}</span></li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Layout>

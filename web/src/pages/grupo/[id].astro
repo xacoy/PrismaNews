@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Spectrum from '../../components/Spectrum.astro';
+import SourceChip from '../../components/SourceChip.astro';
+import { data } from '../../lib/data';
+import { href, fmtDate, fmtLong, plural, trendLabel, colorVars } from '../../lib/format';
+import type { Group, Article } from '../../lib/types';
+
+export function getStaticPaths() {
+  return data.groups.map((g) => ({ params: { id: g.id }, props: { g } }));
+}
+const { g } = Astro.props as { g: Group };
+
+// Un bloque por medio, ordenados por quién publicó primero.
+const bySource = new Map<string, Article[]>();
+for (const a of [...g.articles].sort((x, y) => x.published.localeCompare(y.published))) {
+  (bySource.get(a.source) ?? bySource.set(a.source, []).get(a.source)!).push(a);
+}
+---
+<Layout title={`${g.headline} · Prisma`} description={`${plural(g.source_count, 'medio cubre', 'medios cubren')} esta noticia. Compara cómo la titula cada uno.`}>
+  <article class="mx-auto max-w-3xl px-4 pb-16 pt-6">
+    <p class="text-sm"><a class="text-muted underline hover:text-ink" href={href(g.editions.includes('canarias') ? 'canarias/' : '')}>← Volver a la portada</a></p>
+    <div class="mt-4"><Spectrum sources={g.sources} /></div>
+    <h1 class="headline mt-4 text-3xl sm:text-4xl">{g.headline}</h1>
+    <p class="mt-3 text-sm text-muted">
+      <strong class="text-ink">{plural(g.source_count, 'medio', 'medios')}</strong>{' · '}
+      {plural(g.article_count, 'titular', 'titulares')}{' · '}
+      primera publicación <time datetime={g.first_published}>{fmtLong(g.first_published)}</time>{' · '}
+      <span title={`${g.trend.recent} titulares en las últimas horas frente a ${g.trend.previous} en las anteriores`}>{trendLabel[g.trend.state]}</span>
+    </p>
+    <p class="mt-1 text-xs text-muted">Titular representativo (de {g.headline_source}): el menos llamativo del grupo, con prioridad al más central. <a class="underline" href={href('como-funciona/#titular')}>Cómo se elige</a>.</p>
+
+    <h2 class="mt-8 text-sm font-semibold uppercase tracking-wide text-muted">Cómo lo titula cada medio</h2>
+    <ul class="mt-3 space-y-3">
+      {[...bySource.entries()].map(([source, arts]) => (
+        <li class="src rounded-2xl border border-line bg-surface p-4" style={colorVars(source)}>
+          <div class="flex items-center justify-between gap-2">
+            <SourceChip name={source} class="!text-sm font-semibold !text-ink" />
+            <span class="text-xs text-muted">{arts[0].scope === 'canario' ? 'Medio canario' : 'Medio nacional'}</span>
+          </div>
+          <ul class="mt-2 space-y-3">
+            {arts.map((a) => (
+              <li class="border-l-2 pl-3" style="border-color: var(--c)">
+                <a href={a.url} rel="noopener noreferrer" class="headline block text-[1.1rem] text-ink hover:underline">{a.title}<span class="sr-only"> (abre el artículo original en {source})</span></a>
+                {a.summary && <p class="mt-1 text-sm text-muted">{a.summary}</p>}
+                <p class="mt-1 text-xs text-muted"><time datetime={a.published}>{fmtDate(a.published)}</time>{a.author && <>{' · '}{a.author}</>}{' · '}<span aria-hidden="true">↗</span> artículo original</p>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-8 text-xs text-muted">Prisma muestra solo el titular, el resumen que ofrece el propio feed del medio y un enlace al original. Si crees que este grupo mezcla noticias distintas, es un error posible: lo explicamos en <a class="underline" href={href('como-funciona/#limites')}>límites y errores</a>.</p>
+  </article>
+</Layout>

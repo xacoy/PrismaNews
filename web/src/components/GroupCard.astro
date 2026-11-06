@@ -1,0 +1,31 @@
+---
+import type { Group } from '../lib/types';
+import { href, fmtDate, plural, trendLabel } from '../lib/format';
+import Spectrum from './Spectrum.astro';
+import SourceChip from './SourceChip.astro';
+interface Props { g: Group; featured?: boolean }
+const { g, featured = false } = Astro.props;
+const shown = g.sources.slice(0, featured ? 10 : 6);
+const extra = g.sources.length - shown.length;
+const image = g.image;
+---
+<article class={`group relative rounded-2xl border border-line bg-surface p-4 sm:p-5 transition-colors hover:border-accent ${featured ? 'sm:p-7' : ''}`}>
+  {image && (
+    <div class="img-box mb-3 overflow-hidden rounded-xl" style="aspect-ratio:16/9">
+      <img src={image} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="360" class="h-full w-full object-cover" data-hide-on-error />
+    </div>
+  )}
+  <Spectrum sources={g.sources} />
+  <h2 class={`headline mt-3 ${featured ? 'text-[1.7rem] sm:text-4xl' : 'text-[1.25rem] sm:text-[1.35rem]'}`}>
+    <a href={href(`grupo/${g.id}/`)} class="after:absolute after:inset-0 after:content-[''] hover:underline">{g.headline}</a>
+  </h2>
+  <p class="mt-2 text-sm text-muted">
+    <strong class="font-semibold text-ink">{plural(g.source_count, 'medio', 'medios')}</strong>
+    {' · '}<time datetime={g.last_published} data-rel>{fmtDate(g.last_published)}</time>
+    {' · '}<span title={`${g.trend.recent} titulares en las últimas horas frente a ${g.trend.previous} en las anteriores`}>{trendLabel[g.trend.state]}</span>
+  </p>
+  <p class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+    {shown.map((s) => <SourceChip name={s} />)}
+    {extra > 0 && <span class="text-[13px] text-muted">+{extra} más</span>}
+  </p>
+</article>

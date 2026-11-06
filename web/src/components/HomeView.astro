@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GroupCard from './GroupCard.astro';
+import { data, frontPageGroups, generatedAt } from '../lib/data';
+import { href, fmtLong, plural } from '../lib/format';
+interface Props { edition: 'espana' | 'canarias' }
+const { edition } = Astro.props;
+const groups = frontPageGroups(edition);
+const counts = { espana: frontPageGroups('espana').length, canarias: frontPageGroups('canarias').length };
+const [first, ...rest] = groups;
+const title = edition === 'espana' ? 'Portada de España' : 'Portada de Canarias';
+---
+<Layout title={edition === 'espana' ? 'Prisma: qué medios cubren cada noticia' : 'Canarias · Prisma'} description="Titulares de distintos medios agrupados por noticia: quién cubre qué y cómo lo titula.">
+  <div class="mx-auto max-w-5xl px-4 pb-16 pt-6">
+    <h1 class="sr-only">{title}</h1>
+    <nav aria-label="Ediciones" class="mb-5 flex items-center justify-between gap-3">
+      <div class="inline-flex rounded-full border border-line bg-surface p-1 text-sm">
+        <a href={href('')} aria-current={edition === 'espana' ? 'page' : undefined}
+           class={`rounded-full px-4 py-1.5 font-medium ${edition === 'espana' ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>España <span class="font-normal">{counts.espana}</span></a>
+        <a href={href('canarias/')} aria-current={edition === 'canarias' ? 'page' : undefined}
+           class={`rounded-full px-4 py-1.5 font-medium ${edition === 'canarias' ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>Canarias <span class="font-normal">{counts.canarias}</span></a>
+      </div>
+      <p class="hidden text-xs text-muted sm:block">Actualizado <time datetime={generatedAt.toISOString()} data-rel>{fmtLong(generatedAt.toISOString())}</time></p>
+    </nav>
+
+    {edition === 'canarias' && (
+      <p class="mb-5 max-w-2xl text-sm text-muted">Noticias que cubre al menos un medio canario, junto con los medios nacionales que hablan de lo mismo.</p>
+    )}
+
+    {!first && (
+      <p class="rounded-2xl border border-line bg-surface p-6 text-muted">Todavía no hay noticias agrupadas en esta edición. Vuelve en un rato.</p>
+    )}
+    {first && (
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="md:col-span-2"><GroupCard g={first} featured /></div>
+        {rest.map((g) => <GroupCard g={g} />)}
+      </div>
+    )}
+    <p class="mt-8 text-center text-sm text-muted">{plural(groups.length, 'noticia agrupada', 'noticias agrupadas')} en las últimas {data.window_hours} horas. <a class="underline" href={href('como-funciona/')}>Cómo funciona</a></p>
+  </div>
+</Layout>
