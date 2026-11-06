@@ -135,3 +135,18 @@ def test_refresh_editions_corrige_el_historico(fake):
     g = make_group("g1", arts, fake.encode([a.title for a in arts]), NOW, 6)
     g["editions"] = ["espana"]                                          # grupo guardado con una regla antigua
     assert refresh_editions(g)["editions"] == ["espana", "canarias"]
+
+
+def test_grupo_partido_no_repite_ids(fake):
+    """Un grupo se parte en dos: un trozo hereda el id y el otro no puede llevarse el mismo."""
+    z, a, b, c = (mk("A", "z", 30), mk("B", "a", 29), mk("C", "b", 28), mk("D", "c", 27))
+    prev = make_group(new_group_id([z, a, b, c]), [z, a, b, c], fake.encode(["z", "a", "b", "c"]), NOW, 6)
+    e = [a, b, c, mk("E", "x", 5)]
+    d = [z, mk("F", "y", 4)]
+    ids = assign_ids([d, e], [prev])
+    assert len(set(ids)) == 2
+    assert ids[1] == prev["id"]                 # el trozo con más artículos conserva el id
+    # estable: repetir la operación da lo mismo
+    assert assign_ids([d, e], [prev]) == ids
+    # un id reservado (grupo antiguo congelado) tampoco se reutiliza
+    assert assign_ids([d], [], reserved={new_group_id(d)})[0] != new_group_id(d)

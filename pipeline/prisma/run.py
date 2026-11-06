@@ -106,7 +106,7 @@ def run(args) -> dict:
         else:
             loose += idxs
     new_arts = [[pool[i] for i in idxs] for idxs in publish]
-    ids = assign_ids(new_arts, active_groups)
+    ids = assign_ids(new_arts, active_groups, reserved={g["id"] for g in frozen})
     new_groups = [make_group(gid, [pool[i] for i in idxs], vecs[idxs], now, cfg["trend"]["window_hours"])
                   for gid, idxs in zip(ids, publish)]
 
