@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { data } from '../lib/data';
+import { href } from '../lib/format';
+import ev from '../data/evaluacion.json';
+const pct = (x: number) => `${Math.round(x * 100)} %`;
+const nat = data.sources.filter((s) => s.scope === 'nacional').length;
+const can = data.sources.filter((s) => s.scope === 'canario').length;
+---
+<Layout title="Cómo funciona · Prisma" description="Cómo agrupa Prisma los titulares, qué guarda, qué no hace y qué errores pueden darse.">
+  <div class="mx-auto max-w-2xl px-4 pb-20 pt-6 prose-prisma">
+    <h1 class="headline mb-2 text-3xl sm:text-4xl">Cómo funciona</h1>
+    <p class="text-muted">Prisma junta los titulares de distintos medios que hablan de lo mismo, para que veas quién cubre cada noticia y cómo la titula. Nada más.</p>
+
+    <h2 id="que-no-hace">Lo que Prisma no hace</h2>
+    <ul>
+      <li><strong>No etiqueta ni juzga a los medios.</strong> No hay orientación política, ni puntuaciones de fiabilidad, ni “sesgo”. Esa información depende de criterios que cualquiera puede discutir y no queremos imponer uno.</li>
+      <li><strong>No decide qué es verdad.</strong> Que varios medios cuenten algo no lo hace cierto, ni que lo cuente uno solo lo hace falso.</li>
+      <li><strong>No copia artículos.</strong> Solo guardamos el titular, el enlace, el medio, la fecha, el autor si el feed lo trae y el resumen corto que el propio medio publica en su feed.</li>
+    </ul>
+
+    <h2 id="fuentes">De dónde salen los titulares</h2>
+    <p>De los feeds RSS/Atom públicos de {data.sources.length} medios ({nat} nacionales y {can} canarios). Respetamos el <code>robots.txt</code> de cada sitio, nos identificamos como <code>PrismaBot</code> y pedimos los feeds con calma. Si un medio no ofrece feed público o no permite que lo consulten programas, no aparece. Puedes ver la lista en <a href={href('medios/')}>Medios</a>.</p>
+    <p>Las imágenes, cuando las hay, son las que el propio feed enlaza: no las copiamos ni las alojamos. Todos los enlaces llevan al artículo original (con <code>?ref=prisma</code>, para que el medio sepa de dónde llegas).</p>
+
+    <h2 id="agrupacion">Cómo se agrupan las noticias</h2>
+    <ul>
+      <li><strong>1. Limpieza.</strong> Quitamos HTML y espacios, y descartamos duplicados exactos y repeticiones del mismo titular en el mismo medio.</li>
+      <li><strong>2. Significado.</strong> Un modelo de lenguaje multilingüe de código abierto, que se ejecuta dentro del propio proceso de actualización (los titulares no se envían a ningún servicio de IA de terceros ni de pago) convierte cada titular y su resumen en un vector. Dos titulares que dicen lo mismo con otras palabras quedan cerca.</li>
+      <li><strong>3. Agrupación.</strong> Unimos los titulares cuya similitud supera un umbral, dentro de una ventana móvil de {data.window_hours} horas.</li>
+      <li><strong>4. Reglas para evitar mezclas.</strong> Las entidades compartidas (personas, lugares, organizaciones) acercan dos titulares; si no comparten ninguna, o sus cifras o fechas chocan (“3 muertos” frente a “5 muertos”), no se agrupan. Los titulares de directos, crónicas y resúmenes del día (“última hora”, “minuto a minuto”, el tiempo, la lotería…) no se agrupan, porque mezclan temas. Un titular de menos de cinco palabras solo se une a otro casi idéntico.</li>
+      <li><strong>5. Mínimo de medios.</strong> Un grupo solo se publica si lo cubren al menos 2 medios distintos.</li>
+    </ul>
+    <p>Cada grupo conserva el mismo identificador mientras exista, aunque se le sumen más medios. Guardamos {data.history_days} días de histórico.</p>
+
+    <h2 id="titular">Qué titular se muestra como principal</h2>
+    <p>Puntuamos cada titular del grupo por lo llamativo que es: mayúsculas, exclamaciones, preguntas, comillas de apertura, emojis, expresiones como “última hora” o “bomba”, puntos suspensivos o longitud extrema. Nos quedamos con los de menor puntuación y, entre ellos, con el más cercano al centro del grupo. Es una regla mecánica para no premiar el titular más estridente; no es un juicio sobre el medio que lo firma.</p>
+
+    <h2 id="tendencia">Sube, baja o estable</h2>
+    <p>Comparamos los titulares publicados en las últimas 6 horas con los de las 6 horas anteriores. “Sube” si hay más; “baja” si hay menos (y antes había al menos dos); “estable” en el resto. Cuenta titulares que recogemos, no lectores.</p>
+
+    <h2 id="ediciones">Ediciones España y Canarias</h2>
+    <p>Las dos salen del mismo proceso. La edición Canarias muestra los grupos en los que aparece al menos un medio canario.</p>
+
+    <h2 id="limites">Límites y errores posibles</h2>
+    <p>La agrupación automática se equivoca a veces. Lo medimos con {ev.pairs} pares de titulares reales que etiquetamos a mano como “mismo asunto” o “distinto” (por ejemplo, dos reportajes sobre el cuidado de familiares no son el mismo asunto aunque se parezcan mucho). Con la configuración actual:</p>
+    <ul>
+      <li><strong>Precisión estimada: {pct(ev.precision)}.</strong> De cada 100 pares que Prisma junta, unos {Math.round(ev.precision * 100)} son realmente la misma noticia.</li>
+      <li><strong>Cobertura estimada: {pct(ev.recall)}.</strong> Prisma deja sin juntar aproximadamente {Math.round((1 - ev.recall) * 100)} de cada 100 pares que sí hablan de lo mismo.</li>
+    </ul>
+    <p>Son estimaciones sobre una muestra pequeña, con el umbral ajustado sobre esa misma muestra, así que las cifras reales pueden ser peores. Por eso:</p>
+    <ul>
+      <li><strong>Puede haber noticias partidas en dos grupos</strong> cuando los medios las titulan de formas muy distintas (algo más probable en noticias grandes con muchos ángulos).</li>
+      <li><strong>Puede haber grupos que mezclen asuntos parecidos</strong>, sobre todo con reportajes del mismo tema o sucesos con protagonistas distintos y vocabulario similar.</li>
+      <li><strong>Un medio ausente no significa que ignore la noticia:</strong> puede no tener feed, haberla titulado muy distinto o no haberla publicado aún.</li>
+      <li><strong>Los medios que no permiten consultas automáticas no aparecen</strong>, y eso condiciona la cobertura, en especial de Canarias.</li>
+      <li>La tendencia es poco fiable en las primeras horas tras un cambio, porque los feeds solo conservan los últimos titulares.</li>
+    </ul>
+    <p>Si ves un error, el código y los datos de evaluación están en <a href="https://github.com/xacoy/PrismaNews">GitHub</a>.</p>
+  </div>
+</Layout>

@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { href } from '../lib/format';
+---
+<Layout title="No encontrada · Prisma">
+  <div class="mx-auto max-w-2xl px-4 py-20 text-center">
+    <h1 class="headline text-4xl">Esta página no existe</h1>
+    <p class="mt-3 text-muted">Puede que la noticia sea antigua y ya no esté en el histórico de 14 días.</p>
+    <p class="mt-6"><a class="rounded-full bg-ink px-5 py-2 text-bg no-underline" href={href('')}>Ir a la portada</a></p>
+  </div>
+</Layout>

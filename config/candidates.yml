@@ -1,0 +1,29 @@
+# Candidatos a feed (NO verificados). scripts/check_sources.py los prueba en orden
+# y se queda con el primero que responde con entradas. Si ninguno vale, intenta
+# descubrir el feed por <link rel="alternate"> de la portada.
+- {name: ABC, scope: nacional, home: "https://www.abc.es/", feeds: ["https://www.abc.es/rss/2.0/portada/", "https://www.abc.es/rss/feeds/abcPortada.xml"]}
+- {name: El País, scope: nacional, home: "https://elpais.com/", feeds: ["https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"]}
+- {name: El Mundo, scope: nacional, home: "https://www.elmundo.es/", feeds: ["https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml"]}
+- {name: La Razón, scope: nacional, home: "https://www.larazon.es/", feeds: ["https://www.larazon.es/rss/portada.xml"]}
+- {name: La Vanguardia, scope: nacional, home: "https://www.lavanguardia.com/", feeds: ["https://www.lavanguardia.com/rss/home.xml"]}
+- {name: El Confidencial, scope: nacional, home: "https://www.elconfidencial.com/", feeds: ["https://rss.elconfidencial.com/espana/"]}
+- {name: elDiario.es, scope: nacional, home: "https://www.eldiario.es/", feeds: ["https://www.eldiario.es/rss/"]}
+- {name: 20minutos, scope: nacional, home: "https://www.20minutos.es/", feeds: ["https://www.20minutos.es/rss/"]}
+- {name: El Español, scope: nacional, home: "https://www.elespanol.com/", feeds: ["https://www.elespanol.com/rss/"]}
+- {name: Público, scope: nacional, home: "https://www.publico.es/", feeds: ["https://www.publico.es/rss/", "https://www.publico.es/rss/portada", "https://www.publico.es/rss/actualidad"]}
+- {name: OKDiario, scope: nacional, home: "https://okdiario.com/", feeds: ["https://okdiario.com/feed"]}
+- {name: infoLibre, scope: nacional, home: "https://www.infolibre.es/", feeds: ["https://www.infolibre.es/rss/"]}
+- {name: El Debate, scope: nacional, home: "https://www.eldebate.com/", feeds: ["https://www.eldebate.com/rss/"]}
+- {name: The Objective, scope: nacional, home: "https://theobjective.com/", feeds: ["https://theobjective.com/feed/"]}
+- {name: Expansión, scope: nacional, home: "https://www.expansion.com/", feeds: ["https://e00-expansion.uecdn.es/rss/portada.xml"]}
+- {name: Cinco Días, scope: nacional, home: "https://cincodias.elpais.com/", feeds: ["https://feeds.elpais.com/mrss-s/pages/ep/site/cincodias.elpais.com/portada"]}
+- {name: Newtral, scope: nacional, home: "https://www.newtral.es/", feeds: ["https://www.newtral.es/feed/"]}
+- {name: RTVE, scope: nacional, home: "https://www.rtve.es/", feeds: ["https://www.rtve.es/api/noticias.rss"]}
+- {name: Canarias7, scope: canario, home: "https://www.canarias7.es/", feeds: ["https://www.canarias7.es/rss/"]}
+- {name: La Provincia, scope: canario, home: "https://www.laprovincia.es/", feeds: ["https://www.laprovincia.es/rss/", "https://www.laprovincia.es/rss/section/1"]}
+- {name: El Día, scope: canario, home: "https://www.eldia.es/", feeds: ["https://www.eldia.es/rss/", "https://www.eldia.es/rss/section/1"]}
+- {name: Diario de Avisos, scope: canario, home: "https://diariodeavisos.elespanol.com/", feeds: ["https://diariodeavisos.elespanol.com/feed/"]}
+- {name: La Opinión de Tenerife, scope: canario, home: "https://www.laopinion.es/", feeds: ["https://www.laopinion.es/rss/", "https://www.laopinion.es/rss/section/1"]}
+- {name: Canarias Ahora, scope: canario, home: "https://www.eldiario.es/canariasahora/", feeds: ["https://www.eldiario.es/rss/canariasahora/"]}
+- {name: Atlántico Hoy, scope: canario, home: "https://www.atlanticohoy.com/", feeds: ["https://www.atlanticohoy.com/feed/"]}
+- {name: RTVC, scope: canario, home: "https://www.rtvc.es/", feeds: ["https://www.rtvc.es/feed/", "https://www.rtvc.es/rss/", "https://www.rtvc.es/rss/feed.xml"]}

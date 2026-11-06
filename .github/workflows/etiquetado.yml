@@ -1,0 +1,31 @@
+name: Pares candidatos para etiquetar (puntual)
+
+# Solo se ejecuta al tocar estos ficheros en la rama de trabajo o a mano. Sin cron.
+on:
+  push:
+    branches: [claude/sharp-ride-ov3q5l]
+    paths: [scripts/make_candidates.py, .github/workflows/etiquetado.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidatos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FASTEMBED_CACHE: ${{ github.workspace }}/.fastembed-cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+      - uses: actions/cache@v4
+        with:
+          path: .fastembed-cache
+          key: fastembed-paraphrase-multilingual-MiniLM-L12-v2
+      - run: pip install -r pipeline/requirements.txt
+      - run: python scripts/make_candidates.py 0
