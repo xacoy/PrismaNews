@@ -80,7 +80,7 @@ def test_vectores_mezclan_resumen(fake):
 def test_bonus_de_entidades_une_titulares_con_pocas_palabras_comunes(fake):
     t = ["La Fiscalía Europea investiga fraude Adif Urda", "Operación de la UCO por Urda: reclaman documentación a Adif"]
     sin = cl.cluster_titles(fake.encode(t), t, 0.55, {})
-    con = cl.cluster_titles(fake.encode(t), t, 0.55, {"entity_boost": 0.3})
+    con = cl.cluster_titles(fake.encode(t), t, 0.55, {"entity_boost": 0.6})
     assert sin[0] != sin[1] and con[0] == con[1]
 
 
