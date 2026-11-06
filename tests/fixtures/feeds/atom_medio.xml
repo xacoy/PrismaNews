@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Atom de Prueba</title>
+<entry>
+  <title>Un temporal deja lluvias en Canarias</title>
+  <link href="https://www.atomejemplo.es/temporal"/>
+  <updated>2026-11-05T11:00:00Z</updated>
+  <author><name>Redacción</name></author>
+  <summary>Texto muy largo. palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra palabra</summary>
+</entry>
+</feed>

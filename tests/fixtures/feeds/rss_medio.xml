@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel><title>Diario de Prueba</title>
+<item>
+  <title>  El Gobierno aprueba el decreto &amp; las ayudas | Diario de Prueba </title>
+  <link>https://www.ejemplo.es/politica/decreto.html?utm_source=rss&amp;id=7#comentarios</link>
+  <pubDate>Thu, 05 Nov 2026 10:00:00 +0000</pubDate>
+  <dc:creator>Ana Pérez</dc:creator>
+  <description>&lt;p&gt;Resumen &lt;b&gt;corto&lt;/b&gt; del decreto.&lt;/p&gt;</description>
+  <media:content url="https://img.ejemplo.es/decreto.jpg" medium="image"/>
+</item>
+<item>
+  <title>El Gobierno aprueba el decreto &amp; las ayudas</title>
+  <link>https://www.ejemplo.es/politica/decreto-otra-url.html</link>
+  <pubDate>Thu, 05 Nov 2026 10:30:00 +0000</pubDate>
+</item>
+<item>
+  <title>Noticia sin fecha</title>
+  <link>https://www.ejemplo.es/sin-fecha.html</link>
+</item>
+<item>
+  <title></title>
+  <link>https://www.ejemplo.es/sin-titulo.html</link>
+  <pubDate>Thu, 05 Nov 2026 10:00:00 +0000</pubDate>
+</item>
+<item>
+  <title>Noticia del futuro</title>
+  <link>https://www.ejemplo.es/futuro.html</link>
+  <pubDate>Fri, 06 Nov 2026 23:00:00 +0000</pubDate>
+  <enclosure url="https://img.ejemplo.es/futuro.png" type="image/png" length="0"/>
+</item>
+<item>
+  <title>Noticia antigua</title>
+  <link>https://www.ejemplo.es/antigua.html</link>
+  <pubDate>Mon, 02 Nov 2026 08:00:00 +0000</pubDate>
+</item>
+</channel></rss>

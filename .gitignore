@@ -5,7 +5,8 @@ __pycache__/
 node_modules/
 dist/
 .astro/
-data/
+/data/
+web/public/data/
 .env
 .env.*
 *.pem
