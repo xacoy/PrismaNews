@@ -28,4 +28,4 @@ jobs:
           path: .fastembed-cache
           key: fastembed-paraphrase-multilingual-MiniLM-L12-v2
       - run: pip install -r pipeline/requirements.txt
-      - run: python scripts/make_candidates.py 22
+      - run: python scripts/make_candidates.py 0
