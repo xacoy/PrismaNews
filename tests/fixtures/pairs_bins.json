@@ -1,0 +1,4 @@
+{
+  "descripcion": "Pares entre medios distintos disponibles en cada tramo de similitud (ejecución del 2026-11-06). Sirven para ponderar la muestra estratificada de pairs.jsonl. No se muestrearon pares por debajo de 0,55 (se asumen 'distintos').",
+  "bins": [[0.92, 1.01, 36], [0.86, 0.92, 41], [0.80, 0.86, 85], [0.74, 0.80, 123], [0.68, 0.74, 309], [0.62, 0.68, 678], [0.55, 0.62, 2291]]
+}
