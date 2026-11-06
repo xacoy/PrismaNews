@@ -1,11 +1,12 @@
-name: Prisma (pipeline)
+name: Prisma (actualizar y publicar)
 
-# NO hay cron activo. Para programarlo cada 2 horas, descomente el bloque 'schedule' cuando confirme.
-# En la rama de trabajo solo ejecuta y mide el pipeline; el despliegue a Pages se añade en la fase 5.
+# ESTADO: el cron está COMENTADO a propósito. Para programarlo cada 2 horas, descomente 'schedule' cuando lo confirme.
+# - En la rama de trabajo: ejecuta pipeline + compilación de la web y mide tiempos, pero NO despliega.
+# - En main (o 'Run workflow' sobre main): además publica en GitHub Pages (requiere Settings > Pages > Source: GitHub Actions).
 on:
   push:
     branches: [claude/sharp-ride-ov3q5l]
-    paths: ["pipeline/**", "config/**", "scripts/make_sample.py", ".github/workflows/pipeline.yml"]
+    paths: ["pipeline/**", "config/**", "web/**", ".github/workflows/pipeline.yml"]
   workflow_dispatch:
   # schedule:
   #   - cron: "17 */2 * * *"
@@ -13,6 +14,7 @@ on:
 permissions:
   contents: read
 
+# Una sola ejecución a la vez: evita que dos corridas se pisen el histórico.
 concurrency:
   group: prisma-pipeline
   cancel-in-progress: false
@@ -20,18 +22,27 @@ concurrency:
 env:
   SITE_URL: https://xacoy.github.io/PrismaNews
   FASTEMBED_CACHE: ${{ github.workspace }}/.fastembed-cache
+  PYTHONPATH: pipeline
 
 jobs:
-  datos:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Marca de inicio
+        run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: pipeline/requirements-dev.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      # Modelo de embeddings (~220 MB descomprimido): se cachea para no descargarlo en cada ejecución.
       - uses: actions/cache@v4
         with:
           path: .fastembed-cache
@@ -41,7 +52,6 @@ jobs:
         run: python -m pytest -q
 
       - name: Copia de respaldo del histórico (caché)
-        id: backup
         uses: actions/cache/restore@v4
         with:
           path: backup
@@ -70,14 +80,9 @@ jobs:
 
       - name: Recoger, agrupar y exportar
         run: python -m prisma.run --prev-dir prev --out-dir web/public/data
-        working-directory: .
-        env:
-          PYTHONPATH: pipeline
 
       - name: Validar datos
         run: python -m prisma.validate web/public/data
-        env:
-          PYTHONPATH: pipeline
 
       - name: Guardar copia de respaldo
         run: mkdir -p backup && cp web/public/data/groups.json web/public/data/pool.json backup/
@@ -86,20 +91,47 @@ jobs:
           path: backup
           key: prisma-data-${{ github.run_id }}
 
+      - name: Compilar la web
+        working-directory: web
+        run: |
+          npm ci
+          s=$SECONDS; npm run build
+          echo "WEB_BUILD_S=$((SECONDS-s))" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
       - name: Resumen de tiempos
         run: |
           python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
-          import json
+          import json, os, time
           m = json.load(open("web/public/data/meta.json"))
+          total = int(time.time()) - int(os.environ["T0"])
           print("### Prisma: resumen de la ejecución\n")
           print("| Paso | Segundos |\n|---|---|")
           for k, v in m["timings"].items():
-              print(f"| {k} | {v} |")
+              print(f"| pipeline · {k} | {v} |")
+          print(f"| compilar web | {os.environ.get('WEB_BUILD_S', '?')} |")
+          print(f"| **total del job (hasta aquí)** | **{total}** |")
           print("\n```json\n" + json.dumps(m["counts"], indent=1) + "\n```")
           bad = [f for f in m["feeds"] if not f["ok"]]
           if bad:
               print("\nFeeds con problemas: " + ", ".join(f"{f['name']} ({f['error']})" for f in bad))
           PY
+          du -sh web/dist | sed 's/^/Tamaño del sitio: /' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Muestra de datos (para desarrollo)
-        run: python scripts/make_sample.py web/public/data/groups.json 24
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
