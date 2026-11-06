@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { href } from '../lib/format';
+---
+<Layout title="Sin conexión · Prisma">
+  <div class="mx-auto max-w-2xl px-4 py-20 text-center">
+    <h1 class="headline text-4xl">Sin conexión</h1>
+    <p class="mt-3 text-muted">No hay red y esta página no estaba guardada. La última portada que abriste sigue disponible.</p>
+    <p class="mt-6"><a class="rounded-full bg-ink px-5 py-2 text-bg no-underline" href={href('')}>Ver la última portada</a></p>
+  </div>
+</Layout>
