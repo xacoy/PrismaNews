@@ -41,6 +41,8 @@ def probe(url: str) -> dict:
         return out
     try:
         r = requests.get(url, headers=HEADERS, timeout=20, allow_redirects=True)
+        if r.status_code == 406:  # algunos servidores no aceptan nuestro Accept
+            r = requests.get(url, headers={**HEADERS, "Accept": "*/*"}, timeout=20, allow_redirects=True)
     except requests.RequestException as e:
         out["error"] = f"{type(e).__name__}"
         return out

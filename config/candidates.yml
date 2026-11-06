@@ -10,7 +10,7 @@
 - {name: elDiario.es, scope: nacional, home: "https://www.eldiario.es/", feeds: ["https://www.eldiario.es/rss/"]}
 - {name: 20minutos, scope: nacional, home: "https://www.20minutos.es/", feeds: ["https://www.20minutos.es/rss/"]}
 - {name: El Español, scope: nacional, home: "https://www.elespanol.com/", feeds: ["https://www.elespanol.com/rss/"]}
-- {name: Público, scope: nacional, home: "https://www.publico.es/", feeds: ["https://www.publico.es/rss/"]}
+- {name: Público, scope: nacional, home: "https://www.publico.es/", feeds: ["https://www.publico.es/rss/", "https://www.publico.es/rss/portada", "https://www.publico.es/rss/actualidad"]}
 - {name: OKDiario, scope: nacional, home: "https://okdiario.com/", feeds: ["https://okdiario.com/feed"]}
 - {name: infoLibre, scope: nacional, home: "https://www.infolibre.es/", feeds: ["https://www.infolibre.es/rss/"]}
 - {name: El Debate, scope: nacional, home: "https://www.eldebate.com/", feeds: ["https://www.eldebate.com/rss/"]}
@@ -20,10 +20,10 @@
 - {name: Newtral, scope: nacional, home: "https://www.newtral.es/", feeds: ["https://www.newtral.es/feed/"]}
 - {name: RTVE, scope: nacional, home: "https://www.rtve.es/", feeds: ["https://www.rtve.es/api/noticias.rss"]}
 - {name: Canarias7, scope: canario, home: "https://www.canarias7.es/", feeds: ["https://www.canarias7.es/rss/"]}
-- {name: La Provincia, scope: canario, home: "https://www.laprovincia.es/", feeds: ["https://www.laprovincia.es/rss/"]}
-- {name: El Día, scope: canario, home: "https://www.eldia.es/", feeds: ["https://www.eldia.es/rss/"]}
+- {name: La Provincia, scope: canario, home: "https://www.laprovincia.es/", feeds: ["https://www.laprovincia.es/rss/", "https://www.laprovincia.es/rss/section/1"]}
+- {name: El Día, scope: canario, home: "https://www.eldia.es/", feeds: ["https://www.eldia.es/rss/", "https://www.eldia.es/rss/section/1"]}
 - {name: Diario de Avisos, scope: canario, home: "https://diariodeavisos.elespanol.com/", feeds: ["https://diariodeavisos.elespanol.com/feed/"]}
-- {name: La Opinión de Tenerife, scope: canario, home: "https://www.laopinion.es/", feeds: ["https://www.laopinion.es/rss/"]}
+- {name: La Opinión de Tenerife, scope: canario, home: "https://www.laopinion.es/", feeds: ["https://www.laopinion.es/rss/", "https://www.laopinion.es/rss/section/1"]}
 - {name: Canarias Ahora, scope: canario, home: "https://www.eldiario.es/canariasahora/", feeds: ["https://www.eldiario.es/rss/canariasahora/"]}
 - {name: Atlántico Hoy, scope: canario, home: "https://www.atlanticohoy.com/", feeds: ["https://www.atlanticohoy.com/feed/"]}
-- {name: RTVC, scope: canario, home: "https://www.rtvc.es/", feeds: ["https://www.rtvc.es/feed/"]}
+- {name: RTVC, scope: canario, home: "https://www.rtvc.es/", feeds: ["https://www.rtvc.es/feed/", "https://www.rtvc.es/rss/", "https://www.rtvc.es/rss/feed.xml"]}
