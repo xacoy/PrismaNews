@@ -1,0 +1,24 @@
+name: Comprobar fuentes (puntual)
+
+# Solo se ejecuta al tocar estos ficheros en la rama de trabajo o a mano.
+# No es el workflow programado de Prisma.
+on:
+  push:
+    branches: [claude/sharp-ride-ov3q5l]
+    paths: [config/candidates.yml, scripts/check_sources.py, .github/workflows/check-sources.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install feedparser requests pyyaml
+      - run: python scripts/check_sources.py config/candidates.yml /tmp/sources.yml
