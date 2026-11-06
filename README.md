@@ -7,7 +7,7 @@ Web de noticias personal
 
 Agregador de noticias en español al estilo de Ground News: **agrupa los titulares de distintos medios que hablan de lo mismo** y muestra qué medios cubren cada noticia y cómo la titulan. Prisma **no etiqueta ni juzga a los medios** (sin orientación política ni puntuaciones de fiabilidad).
 
-- Ediciones **España** y **Canarias** (la de Canarias son los grupos con al menos un medio canario).
+- Ediciones **España** y **Canarias**. La de Canarias son las noticias **que hablan de Canarias** (por contenido, no por el medio que las publica): se mira si algún titular o resumen del grupo menciona una isla, un municipio, una institución, un equipo o un asunto canario. La lista de términos está en `pipeline/prisma/canarias.py` (`TERMS`, con sus falsos amigos en `EXCLUDE`); si falta alguno, se añade ahí y se ejecutan las pruebas. Para revisar la regla sobre los datos publicados: workflow *Informe edición Canarias (puntual)*.
 - Solo RSS/Atom públicos. Se guarda titular, enlace, medio, fecha, autor y resumen corto del feed; nunca el cuerpo. Todos los enlaces salen al original con `?ref=prisma`.
 - **Coste cero**: Python + modelo de embeddings local (ONNX), web estática Astro, GitHub Actions (repo público: minutos gratis e ilimitados) y GitHub Pages. Sin APIs de pago.
 

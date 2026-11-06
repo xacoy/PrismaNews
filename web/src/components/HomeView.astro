@@ -24,14 +24,14 @@ const title = edition === 'espana' ? 'Portada de España' : 'Portada de Canarias
     </nav>
 
     {edition === 'canarias' && (
-      <p class="mb-5 max-w-2xl text-sm text-muted">Noticias que cubre al menos un medio canario, junto con los medios nacionales que hablan de lo mismo.</p>
+      <p class="mb-5 max-w-2xl text-sm text-muted">Noticias que hablan de Canarias (islas, municipios, instituciones, deporte…), cubiertas por medios canarios y también por medios nacionales. Las noticias nacionales que solo recoge un medio canario no entran aquí.</p>
     )}
 
     {!first && (
       <p class="rounded-2xl border border-line bg-surface p-6 text-muted">Todavía no hay noticias agrupadas en esta edición. Vuelve en un rato.</p>
     )}
     {first && (
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
         <div class="md:col-span-2"><GroupCard g={first} featured /></div>
         {rest.map((g) => <GroupCard g={g} />)}
       </div>
