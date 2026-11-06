@@ -65,7 +65,10 @@ def test_trend():
 def test_make_group_campos_y_enlaces(fake):
     arts = [mk("A", "Plan de vivienda", 5, scope="canario", url="https://a.es/x?id=1"), mk("B", "Plan de vivienda ya", 2)]
     g = make_group("g1", arts, fake.encode([a.title for a in arts]), NOW, 6)
-    assert g["source_count"] == 2 and g["editions"] == ["espana", "canarias"]
+    assert g["source_count"] == 2 and g["editions"] == ["espana"]      # medio canario, noticia sin nada de Canarias
+    arts[1].title = "Plan de vivienda en Tenerife"
+    g = make_group("g1", arts, fake.encode([a.title for a in arts]), NOW, 6)
+    assert g["editions"] == ["espana", "canarias"]
     assert g["first_published"] < g["last_published"]
     assert all("ref=prisma" in a["url"] for a in g["articles"])
     assert g["articles"][0]["url"] == "https://a.es/x?id=1&ref=prisma"
@@ -124,3 +127,11 @@ def test_cache_ilegible_se_descarta(tmp_path):
     p = tmp_path / "vectors.npz"
     p.write_bytes(b"no es un npz")
     assert VectorCache(str(p)).vectors == {}
+
+
+def test_refresh_editions_corrige_el_historico(fake):
+    from prisma.groups import refresh_editions
+    arts = [mk("A", "Aviso por lluvias en Lanzarote", 3), mk("B", "Lluvias en Lanzarote: alerta", 2)]
+    g = make_group("g1", arts, fake.encode([a.title for a in arts]), NOW, 6)
+    g["editions"] = ["espana"]                                          # grupo guardado con una regla antigua
+    assert refresh_editions(g)["editions"] == ["espana", "canarias"]

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 
+from .canarias import is_canary_group
 from .headline import pick_headline
 from .models import Article, iso
 from .normalize import canonical_url, with_ref
@@ -58,6 +59,11 @@ def trend(arts: list[Article], now: datetime, hours: int) -> dict:
     return {"state": state, "recent": recent, "previous": before}
 
 
+def editions_for(arts: list[Article]) -> list[str]:
+    """Todos los grupos van en España; en Canarias solo los que hablan de Canarias (por contenido, no por medio)."""
+    return ["espana"] + (["canarias"] if is_canary_group(arts) else [])
+
+
 def make_group(gid: str, arts: list[Article], vectors: np.ndarray, now: datetime, trend_hours: int) -> dict:
     arts = sorted(arts, key=lambda a: a.published)
     h = pick_headline([a.title for a in arts], vectors)
@@ -74,7 +80,7 @@ def make_group(gid: str, arts: list[Article], vectors: np.ndarray, now: datetime
         "headline": arts[h].title,
         "headline_source": arts[h].source,
         "image": image,
-        "editions": ["espana"] + (["canarias"] if any(a.scope == "canario" for a in kept) else []),
+        "editions": editions_for(arts),
         "source_count": len(sources),
         "sources": sources,
         "article_count": len(kept),
@@ -95,3 +101,9 @@ def articles_of(group: dict) -> list[Article]:
         a.url = canonical_url(a.url)  # quita ?ref=prisma al releer el histórico
         out.append(a)
     return out
+
+
+def refresh_editions(group: dict) -> dict:
+    """Recalcula las ediciones de un grupo ya guardado (si cambia la regla, el histórico se corrige solo)."""
+    group["editions"] = editions_for(articles_of(group))
+    return group
