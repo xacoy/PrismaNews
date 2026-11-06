@@ -1,6 +1,7 @@
 """Descarga y lectura de feeds RSS/Atom públicos. No se lee el contenido de los artículos."""
 from __future__ import annotations
 
+import html
 import time
 import urllib.robotparser
 from collections import defaultdict
@@ -51,6 +52,12 @@ class Robots:
 
 
 def _image(entry) -> str | None:
+    url = _image_raw(entry)
+    # algunos feeds escapan dos veces los "&" de las URL (&amp;amp;)
+    return html.unescape(url).strip() if url else None
+
+
+def _image_raw(entry) -> str | None:
     for key in ("media_content", "media_thumbnail"):
         for m in entry.get(key, []) or []:
             url = m.get("url")
@@ -79,7 +86,7 @@ def parse_feed(content: bytes, source: dict, now: datetime) -> list[Article]:
     out = []
     for e in d.entries:
         title = clean_title(e.get("title"), source["name"])
-        link = (e.get("link") or "").strip()
+        link = html.unescape((e.get("link") or "").strip())
         pub = _published(e, now)
         if not title or not link.startswith("http") or pub is None:
             continue

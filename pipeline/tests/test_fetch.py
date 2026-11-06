@@ -94,3 +94,11 @@ def test_load_sources_solo_activas():
     srcs = load_sources(str(FX.parents[2] / "config" / "sources.yml"))
     assert len(srcs) == 20 and all(s["status"] == "activo" for s in srcs)
     assert {s["scope"] for s in srcs} == {"nacional", "canario"}
+
+
+def test_url_de_imagen_con_amp_doble_escapado():
+    xml = b"""<?xml version="1.0"?><rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><item>
+    <title>Titular de prueba largo</title><link>https://e.es/a</link><pubDate>Thu, 05 Nov 2026 10:00:00 +0000</pubDate>
+    <media:content url="https://img.e.es/a.jpg?w=1200&amp;amp;h=675&amp;amp;f=webp" medium="image"/></item></channel></rss>"""
+    a = parse_feed(xml, SRC, NOW)[0]
+    assert a.image == "https://img.e.es/a.jpg?w=1200&h=675&f=webp"
