@@ -70,3 +70,17 @@ print("Falsos negativos (separados sin deber) con el umbral actual:")
 for p, y in zip(pairs, pred):
     if not y and p["label"]:
         print(f"  {p['id']} [{p['a']['source']}] {p['a']['title'][:90]} || [{p['b']['source']}] {p['b']['title'][:90]}")
+
+# Resumen compacto de la configuración actual (se lee al final del log)
+w = ev.load_bin_weights(pairs, a.bins)
+wl = [w[p["bin"]] for p in pairs]
+yl = [p["label"] for p in pairs]
+mw = ev.metrics(yl, pred, wl)
+mu = ev.metrics(yl, pred, [1.0] * len(yl))
+fp = sum(1 for p, y in zip(pairs, pred) if y and not p["label"])
+fn = sum(1 for p, y in zip(pairs, pred) if not y and p["label"])
+print("\n== RESUMEN (configuración actual) ==")
+print(f"umbral={cfg['threshold']} enlace={cfg_link} entity_boost={cfg['rules'].get('entity_boost')} short_title_words={cfg['rules'].get('short_title_words')}")
+print(f"ponderado:     precisión {mw['precision']:.3f}  cobertura {mw['recall']:.3f}  F1 {mw['f1']:.3f}")
+print(f"sin ponderar:  precisión {mu['precision']:.3f}  cobertura {mu['recall']:.3f}  F1 {mu['f1']:.3f}  (sobre {len(pairs)} pares)")
+print(f"falsos positivos {fp}, falsos negativos {fn}")
