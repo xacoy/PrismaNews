@@ -78,12 +78,12 @@ python scripts/check_sources.py config/candidates.yml config/sources.yml
 
 ## Publicar en GitHub Pages (pasos que debe hacer usted)
 
-El despliegue **no está activado**. Para hacerlo:
+Ya está publicado y programado (cada 2 horas). Para repetirlo desde cero en otro repositorio:
 
 1. Fusione la rama de trabajo en `main` (el despliegue solo corre en `main`).
 2. En GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions** (si estuviera en «Deploy from a branch», cámbielo).
 3. **Actions → «Prisma (actualizar y publicar)» → Run workflow** sobre `main`. La primera vez no hay histórico y empieza de cero.
-4. Cuando el resultado le convenza, descomente el bloque `schedule` de `.github/workflows/pipeline.yml` (`17 */2 * * *`) para que se actualice cada 2 horas.
+4. El bloque `schedule` de `.github/workflows/pipeline.yml` (`17 */2 * * *`) ya lo programa cada 2 horas; para pausarlo, coméntelo.
 
 La URL será `https://xacoy.github.io/PrismaNews/`. El workflow mide el tiempo de cada paso y lo deja en el resumen de cada ejecución. Medido en GitHub Actions (6 nov 2026, 20 feeds, ~1.300 titulares): **~50 s por ejecución en régimen normal** (el pipeline en sí, 9,5 s: los vectores de los titulares ya vistos se guardan en la caché de Actions y solo se calculan los nuevos) y 95–120 s en frío (primera ejecución o caché caducada; ahí los embeddings tardan unos 48 s). El sitio pesa ~0,8 MB. Aviso: en repos públicos GitHub **desactiva los workflows programados tras 60 días sin actividad** en el repositorio; un push de vez en cuando lo evita (si se desactiva, se reactiva a mano en Actions).
 
