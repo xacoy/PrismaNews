@@ -52,11 +52,11 @@ def merge_history(prev_groups: list[dict], prev_pool: list[Article], fresh: list
     return frozen, active_groups, dedupe(list(pool.values()))
 
 
-def run(args) -> dict:
+def run(args, now: datetime | None = None) -> dict:
     t0 = time.time()
     timings: dict[str, float] = {}
     cfg = yaml.safe_load(open(args.config, encoding="utf-8"))
-    now = datetime.now(timezone.utc).replace(microsecond=0)
+    now = (now or datetime.now(timezone.utc)).replace(microsecond=0)  # `now` inyectable para las pruebas
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     prev_dir = Path(args.prev_dir) if args.prev_dir else None
