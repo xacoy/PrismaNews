@@ -1,6 +1,7 @@
 name: Prisma (actualizar y publicar)
 
-# ESTADO: el cron está COMENTADO a propósito. Para programarlo cada 2 horas, descomente 'schedule' cuando lo confirme.
+# Se actualiza solo cada 2 horas (cron en UTC; GitHub puede retrasarlo unos minutos en horas punta).
+# Aviso: en repos públicos GitHub desactiva los workflows programados tras 60 días sin actividad en el repo.
 # - En la rama de trabajo: ejecuta pipeline + compilación de la web y mide tiempos, pero NO despliega.
 # - En main (o 'Run workflow' sobre main): además publica en GitHub Pages (requiere Settings > Pages > Source: GitHub Actions).
 on:
@@ -8,8 +9,8 @@ on:
     branches: [claude/sharp-ride-ov3q5l]
     paths: ["pipeline/**", "config/**", "web/**", ".github/workflows/pipeline.yml"]
   workflow_dispatch:
-  # schedule:
-  #   - cron: "17 */2 * * *"
+  schedule:
+    - cron: "17 */2 * * *"
 
 permissions:
   contents: read
