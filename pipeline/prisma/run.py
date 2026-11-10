@@ -21,6 +21,7 @@ from .fetch import fetch_all, load_sources
 from .groups import articles_of, assign_ids, make_group, refresh_editions
 from .models import Article, iso, parse_iso
 from .normalize import dedupe, strip_accents
+from .topics import is_sport, is_sport_group
 
 SCHEMA_VERSION = 1
 
@@ -83,6 +84,14 @@ def run(args, now: datetime | None = None) -> dict:
 
     frozen, active_groups, pool = merge_history(prev_groups, prev_pool, fresh, now, cfg["window_hours"])
 
+    # Deportes: no se publican. Se descartan los artículos antes de agrupar y los grupos antiguos del histórico.
+    n_pool = len(pool)
+    pool = [a for a in pool if not is_sport(a)]
+    n_frozen = len(frozen)
+    frozen = [g for g in frozen if not is_sport_group(articles_of(g))]
+    active_groups = [g for g in active_groups if not is_sport_group(articles_of(g))]
+    print(f"deportes excluidos: {n_pool - len(pool)} artículos, {n_frozen - len(frozen)} grupos antiguos", flush=True)
+
     t = time.time()
     embedder = Embedder(cfg["embedding"].get("model", DEFAULT_MODEL), cache_dir=os.environ.get("FASTEMBED_CACHE"))
     timings["modelo_carga_s"] = round(time.time() - t, 1)
@@ -131,7 +140,7 @@ def run(args, now: datetime | None = None) -> dict:
         "schema_version": SCHEMA_VERSION, "generated_at": iso(now), "model": cfg["embedding"]["model"],
         "threshold": cfg["threshold"], "timings": timings,
         "counts": {"articles_fresh": len(fresh), "pool": len(pool), "groups": len(groups),
-                   "groups_new_or_updated": len(new_groups), "groups_frozen": len(frozen),
+                   "groups_new_or_updated": len(new_groups), "sport_articles_excluded": n_pool - len(pool), "groups_frozen": len(frozen),
                    "embeddings_new": estats["new"], "embeddings_cached": estats["cached"]},
         "feeds": reports,
     }

@@ -9,7 +9,7 @@ interface Props { title: string; description?: string }
 const { title, description = 'Prisma agrupa los titulares de distintos medios que hablan de lo mismo y muestra quién cubre cada noticia y cómo la titula.' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const path = Astro.url.pathname;
-const isActive = (p: string) => (p === '' ? path === href('') || path.startsWith(href('canarias/')) || path.startsWith(href('grupo/')) : path.startsWith(href(p)));
+const isActive = (p: string) => (p === '' ? path === href('') || path.startsWith(href('canarias/')) || path.startsWith(href('tecnologia/')) || path.startsWith(href('finanzas/')) || path.startsWith(href('grupo/')) : path.startsWith(href(p)));
 const nav = [
   { p: '', label: 'Portada' },
   { p: 'medios/', label: 'Medios' },

@@ -10,6 +10,7 @@ from .canarias import is_canary_group
 from .headline import pick_headline
 from .models import Article, iso
 from .normalize import canonical_url, with_ref
+from .topics import topics_of_group
 
 MAX_PER_SOURCE = 3  # titulares como máximo por medio en un grupo
 
@@ -73,8 +74,12 @@ def trend(arts: list[Article], now: datetime, hours: int) -> dict:
 
 
 def editions_for(arts: list[Article]) -> list[str]:
-    """Todos los grupos van en España; en Canarias solo los que hablan de Canarias (por contenido, no por medio)."""
-    return ["espana"] + (["canarias"] if is_canary_group(arts) else [])
+    """Todos los grupos van en España; en Canarias solo los que hablan de Canarias (por contenido, no por medio).
+
+    Además, los de Tecnología (incluye videojuegos) y Finanzas aparecen en su propia sección; un grupo
+    puede estar en varias. El orden es fijo: espana, canarias, tecnologia, finanzas.
+    """
+    return ["espana"] + (["canarias"] if is_canary_group(arts) else []) + topics_of_group(arts)
 
 
 def make_group(gid: str, arts: list[Article], vectors: np.ndarray, now: datetime, trend_hours: int) -> dict:

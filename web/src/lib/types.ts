@@ -1,3 +1,5 @@
+/** Secciones de la web: las dos ediciones y los temas. */
+export type Edition = 'espana' | 'canarias' | 'tecnologia' | 'finanzas';
 export interface Article {
   id: string;
   source: string;
@@ -14,7 +16,7 @@ export interface Group {
   headline: string;
   headline_source: string;
   image: string | null;
-  editions: ('espana' | 'canarias')[];
+  editions: Edition[];
   source_count: number;
   sources: string[];
   article_count: number;

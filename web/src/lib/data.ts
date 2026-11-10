@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Data, Group } from './types';
+import type { Data, Edition, Group } from './types';
 
 /** Lee los datos generados por el pipeline (public/data) o, si no existen, la muestra de desarrollo. */
 function load(): Data {
@@ -14,7 +14,7 @@ export const data = load();
 export const generatedAt = new Date(data.generated_at);
 
 /** Grupos con actividad dentro de la ventana de la portada (el resto queda como histórico). */
-export function frontPageGroups(edition: 'espana' | 'canarias'): Group[] {
+export function frontPageGroups(edition: Edition): Group[] {
   const cutoff = generatedAt.getTime() - data.window_hours * 3600_000;
   return data.groups
     .filter((g) => g.editions.includes(edition) && new Date(g.last_published).getTime() >= cutoff)
