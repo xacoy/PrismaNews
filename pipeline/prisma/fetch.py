@@ -96,6 +96,7 @@ def parse_feed(content: bytes, source: dict, now: datetime) -> list[Article]:
                 id=article_id(link),
                 source=source["name"],
                 scope=source["scope"],
+                topic=source.get("topic"),
                 title=title,
                 url=canonical_url(link),
                 published=pub,

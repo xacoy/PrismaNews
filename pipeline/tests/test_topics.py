@@ -35,10 +35,28 @@ def test_tecnologia_incluye_videojuegos():
     for t in ["OpenAI presenta un nuevo modelo de inteligencia artificial",
               "Apple lanza el nuevo iPhone con un chip más rápido",
               "Nintendo anuncia el lanzamiento de un nuevo videojuego de Zelda",
-              "Un ciberataque paraliza los sistemas del hospital",
-              "La IA cambia el trabajo de los programadores"]:
+              "Nvidia lanza una nueva tarjeta gráfica GeForce",
+              "Nuevo tráiler de GTA VI para PlayStation 5 y Xbox"]:
         assert "tecnologia" in topics_of_group([mk("ABC", t)]), t
     assert "tecnologia" not in topics_of_group([mk("ABC", "El Gobierno aprueba el decreto de vivienda")])
+
+
+def test_politica_y_sucesos_sobre_tecnologia_no_cuentan():
+    for t in ["Bruselas multa a Google con 2.000 millones",
+              "Un ciberataque paraliza los sistemas del hospital",
+              "La IA cambia el trabajo de los programadores",
+              "El Gobierno regula las redes sociales para menores",
+              "Sánchez y Huawei: polémica por los contratos de las escuchas",
+              "TikTok, Instagram y WhatsApp, bajo la lupa de la Fiscalía"]:
+        assert "tecnologia" not in topics_of_group([mk("ABC", t)]), t
+
+
+def test_medio_especializado_cuenta_siempre_y_va_solo_a_su_seccion():
+    xa = mk("Xataka", "Cómo elegir un buen router", 2); xa.topic = "tecnologia"
+    ge = mk("Genbeta", "Cinco trucos para tu router", 1); ge.topic = "tecnologia"
+    assert editions_for([xa, ge]) == ["tecnologia"]
+    gen = mk("ABC", "Cinco trucos para tu router", 1)
+    assert editions_for([xa, gen]) == ["espana", "tecnologia"]
 
 
 def test_finanzas():

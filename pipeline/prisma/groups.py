@@ -10,7 +10,7 @@ from .canarias import is_canary_group
 from .headline import pick_headline
 from .models import Article, iso
 from .normalize import canonical_url, with_ref
-from .topics import topics_of_group
+from .topics import is_specialist, topics_of_group
 
 MAX_PER_SOURCE = 3  # titulares como máximo por medio en un grupo
 
@@ -79,7 +79,10 @@ def editions_for(arts: list[Article]) -> list[str]:
     Además, los de Tecnología (incluye videojuegos) y Finanzas aparecen en su propia sección; un grupo
     puede estar en varias. El orden es fijo: espana, canarias, tecnologia, finanzas.
     """
-    return ["espana"] + (["canarias"] if is_canary_group(arts) else []) + topics_of_group(arts)
+    # Si solo lo cubren medios especializados (p. ej. un lanzamiento de videojuegos en Vandal y 3DJuegos),
+    # va solo a su sección: la portada de España es de actualidad general.
+    base = [] if all(is_specialist(a) for a in arts) else ["espana"]
+    return base + (["canarias"] if is_canary_group(arts) else []) + topics_of_group(arts)
 
 
 def make_group(gid: str, arts: list[Article], vectors: np.ndarray, now: datetime, trend_hours: int) -> dict:
