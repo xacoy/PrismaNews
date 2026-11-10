@@ -32,8 +32,6 @@ TERMS = [
     "cabildo", "cabildos", "gobierno de canarias", "parlamento de canarias", "fernando clavijo", "coalicion canaria",
     "nueva canarias", "audiencia de las palmas", "universidad de la laguna", "ull", "ulpgc", "diputado del comun",
     "consejeria de", "elecciones canarias",
-    # deporte
-    "ud las palmas", "cd tenerife", "heliodoro", "gran canaria arena", "gran canaria", "granca", "dreamland",
     # asuntos típicos
     "cayuco", "cayucos", "el hierro",
     "loro parque", "siam park", "carnaval de santa cruz", "carnaval de las palmas",
@@ -52,7 +50,7 @@ EXCLUDE = [
 CASE_SENSITIVE = {"El Hierro": r"\bEl Hierro\b", "Arona": r"\bArona\b"}
 
 _AMBIGUOUS = {"el hierro", "candelaria", "arona", "ingenio", "tias", "valverde", "vallehermoso", "ull", "consejeria de", "archipielago",
-              "la oliva", "las americas", "playa blanca", "guimar", "granca"}
+              "la oliva", "las americas", "playa blanca", "guimar"}
 
 _RE_TERMS = re.compile(
     r"\b(" + "|".join(re.escape(t) for t in sorted({t for t in TERMS if t not in _AMBIGUOUS}, key=len, reverse=True)) + r")\b"

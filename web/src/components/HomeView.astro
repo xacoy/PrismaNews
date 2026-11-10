@@ -3,28 +3,46 @@ import Layout from '../layouts/Layout.astro';
 import GroupCard from './GroupCard.astro';
 import { data, frontPageGroups, generatedAt } from '../lib/data';
 import { href, fmtLong, plural } from '../lib/format';
-interface Props { edition: 'espana' | 'canarias' }
+import type { Edition } from '../lib/types';
+interface Props { edition: Edition }
 const { edition } = Astro.props;
 const groups = frontPageGroups(edition);
-const counts = { espana: frontPageGroups('espana').length, canarias: frontPageGroups('canarias').length };
+const counts = Object.fromEntries((['espana', 'canarias', 'tecnologia', 'finanzas'] as Edition[]).map((e) => [e, frontPageGroups(e).length])) as Record<Edition, number>;
+const tabs: { id: Edition; path: string; label: string }[] = [
+  { id: 'espana', path: '', label: 'España' },
+  { id: 'canarias', path: 'canarias/', label: 'Canarias' },
+  { id: 'tecnologia', path: 'tecnologia/', label: 'Tecnología' },
+  { id: 'finanzas', path: 'finanzas/', label: 'Finanzas' },
+];
+const intro: Partial<Record<Edition, string>> = {
+  canarias: 'Noticias que hablan de Canarias (islas, municipios, instituciones…), cubiertas por medios canarios y también por medios nacionales. Las noticias nacionales que solo recoge un medio canario no entran aquí.',
+  tecnologia: 'Noticias de tecnología: inteligencia artificial, móviles, ciberseguridad, redes sociales y videojuegos.',
+  finanzas: 'Noticias de finanzas: bolsa, bancos, hipotecas, tipos de interés, inflación y criptomonedas.',
+};
+const titles: Record<Edition, [string, string]> = {
+  espana: ['Prisma: qué medios cubren cada noticia', 'Portada de España'],
+  canarias: ['Canarias · Prisma', 'Portada de Canarias'],
+  tecnologia: ['Tecnología · Prisma', 'Tecnología'],
+  finanzas: ['Finanzas · Prisma', 'Finanzas'],
+};
 const [first, ...rest] = groups;
-const title = edition === 'espana' ? 'Portada de España' : 'Portada de Canarias';
+const [pageTitle, title] = titles[edition];
 ---
-<Layout title={edition === 'espana' ? 'Prisma: qué medios cubren cada noticia' : 'Canarias · Prisma'} description="Titulares de distintos medios agrupados por noticia: quién cubre qué y cómo lo titula.">
+<Layout title={pageTitle} description="Titulares de distintos medios agrupados por noticia: quién cubre qué y cómo lo titula.">
   <div class="mx-auto max-w-5xl px-4 pb-16 pt-6">
     <h1 class="sr-only">{title}</h1>
-    <nav aria-label="Ediciones" class="mb-5 flex items-center justify-between gap-3">
-      <div class="inline-flex rounded-full border border-line bg-surface p-1 text-sm">
-        <a href={href('')} aria-current={edition === 'espana' ? 'page' : undefined}
-           class={`rounded-full px-4 py-1.5 font-medium ${edition === 'espana' ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>España <span class="font-normal">{counts.espana}</span></a>
-        <a href={href('canarias/')} aria-current={edition === 'canarias' ? 'page' : undefined}
-           class={`rounded-full px-4 py-1.5 font-medium ${edition === 'canarias' ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>Canarias <span class="font-normal">{counts.canarias}</span></a>
-      </div>
-      <p class="hidden text-xs text-muted sm:block">Actualizado <time datetime={generatedAt.toISOString()} data-rel>{fmtLong(generatedAt.toISOString())}</time></p>
+    <nav aria-label="Secciones" class="mb-5 flex items-center justify-between gap-3">
+      <div class="-mx-1 flex max-w-full overflow-x-auto px-1"><div class="inline-flex shrink-0 rounded-full border border-line bg-surface p-1 text-sm">
+        {tabs.map((t) => (
+          <a href={href(t.path)} aria-current={edition === t.id ? 'page' : undefined}
+             class={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium sm:px-4 ${edition === t.id ? 'bg-ink text-bg' : 'text-muted hover:text-ink'}`}>{t.label} <span class="font-normal">{counts[t.id]}</span></a>
+        ))}
+      </div></div>
+      <p class="hidden shrink-0 text-xs text-muted lg:block">Actualizado <time datetime={generatedAt.toISOString()} data-rel>{fmtLong(generatedAt.toISOString())}</time></p>
     </nav>
 
-    {edition === 'canarias' && (
-      <p class="mb-5 max-w-2xl text-sm text-muted">Noticias que hablan de Canarias (islas, municipios, instituciones, deporte…), cubiertas por medios canarios y también por medios nacionales. Las noticias nacionales que solo recoge un medio canario no entran aquí.</p>
+    {intro[edition] && (
+      <p class="mb-5 max-w-2xl text-sm text-muted">{intro[edition]}</p>
     )}
 
     {!first && (

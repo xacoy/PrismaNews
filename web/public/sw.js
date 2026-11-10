@@ -13,7 +13,7 @@ const MATCH = { ignoreVary: true, ignoreSearch: false };
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CORE).then((c) =>
-      Promise.allSettled([SCOPE, SCOPE + 'canarias/', SCOPE + 'sin-conexion/'].map((u) => c.add(u))),
+      Promise.allSettled([SCOPE, SCOPE + 'canarias/', SCOPE + 'tecnologia/', SCOPE + 'finanzas/', SCOPE + 'sin-conexion/'].map((u) => c.add(u))),
     ).then(() => self.skipWaiting()),
   );
 });
