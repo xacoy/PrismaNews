@@ -120,6 +120,7 @@ def main():
             "name": c["name"],
             "url": (best or tried[-1] if tried else {"url": c["feeds"][0]})["url"],
             "scope": c["scope"],
+            **({"topic": c["topic"]} if c.get("topic") else {}),
             "status": "activo" if best else "descartado",
             "checked": today,
         }

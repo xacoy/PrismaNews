@@ -33,26 +33,24 @@ SPORT_TERMS = [
 # Segmentos de URL propios de secciones de deportes
 SPORT_PATH = re.compile(r"/(deportes?|futbol|baloncesto|tenis|motor|motociclismo|ciclismo|sports?|soccer)/")
 
+# En prensa generalista, «tecnología» sale casi siempre en noticias de política, empresas o sucesos
+# (multas a Google, ciberataques, redes sociales, IA y regulación…). Por eso aquí solo van términos de
+# producto, plataforma o videojuegos; el grueso de la sección sale de los medios especializados (`topic: tecnologia`).
 TECH_TERMS = [
-    "tecnologia", "tecnologico", "tecnologica", "tecnologicas", "inteligencia artificial", "chatgpt", "openai", "anthropic",
-    "gemini", "copilot", "llm", "algoritmo", "robot", "robots", "robotica", "chip", "chips", "semiconductores",
-    "nvidia", "intel", "amd", "apple", "iphone", "ipad", "macbook", "android", "google", "microsoft", "windows",
-    "samsung", "xiaomi", "huawei", "amazon web services", "meta ai", "tiktok", "instagram", "whatsapp", "telegram",
-    "youtube", "netflix", "spotify", "starlink", "spacex", "software", "aplicacion movil", "app", "apps", "smartphone",
-    "smartphones", "movil", "moviles", "ordenador", "portatil", "tablet", "wearable", "realidad virtual",
-    "realidad aumentada", "internet", "wifi", "5g", "6g", "fibra optica", "ciberseguridad", "ciberataque",
-    "ciberataques", "hacker", "hackers", "hackeo", "ransomware", "malware", "phishing", "brecha de datos", "startup",
-    "startups", "big tech", "computacion cuantica", "ordenador cuantico", "centro de datos", "centros de datos",
-    "redes sociales", "streaming", "dron", "drones", "coche electrico", "bateria", "gadget",
+    "chatgpt", "openai", "anthropic", "claude ai", "gemini ai", "nvidia", "iphone", "ipad", "macbook", "airpods", "apple watch",
+    "samsung galaxy", "galaxy z", "pixel pro", "smartphone", "smartphones", "gadget",
+    "gadgets", "geforce", "radeon", "ryzen", "procesador", "tarjeta grafica", "semiconductores", "ordenador cuantico",
+    "computacion cuantica", "realidad virtual", "realidad aumentada", "gafas inteligentes", "robotaxi", "starship",
     # videojuegos
-    "videojuego", "videojuegos", "consola", "consolas", "playstation", "ps5", "xbox", "nintendo", "switch 2", "steam",
-    "valve", "epic games", "fortnite", "minecraft", "pokemon", "zelda", "mario", "call of duty", "grand theft auto",
-    "gta", "gamer", "gamers", "gaming", "esports", "e-sports", "twitch", "ubisoft", "electronic arts", "activision",
-    "blizzard", "riot games", "league of legends", "mando", "lanzamiento del juego",
+    "videojuego", "videojuegos", "consola", "consolas", "playstation", "ps5", "ps6", "xbox", "nintendo", "switch 2",
+    "steam deck", "epic games", "fortnite", "minecraft", "pokemon", "zelda", "super mario", "call of duty", "grand theft auto",
+    "gta 6", "gta vi", "gamer", "gamers", "gaming", "esports", "e-sports", "ubisoft", "electronic arts", "activision",
+    "blizzard", "riot games", "league of legends", "valorant", "counter-strike", "elden ring", "resident evil", "final fantasy",
+    "the witcher", "cyberpunk", "hollow knight", "gamescom", "e3", "the game awards",
 ]
-# Términos ambiguos o cortos: solo cuentan con mayúscula (siglas o nombres propios)
-_TECH_CASE_STRICT = re.compile(r"\b(IA|AI|TIC|CES|MWC|GPU|CPU|iOS|PS4)\b")
-TECH_PATH = re.compile(r"/(tecnologia|tecnologias|tech|videojuegos|juegos|gaming|ciberseguridad|ciencia-y-tecnologia)/")
+# Siglas muy concretas que solo cuentan en mayúsculas
+_TECH_CASE_STRICT = re.compile(r"\b(GPU|CPU|PS4|PS5|MWC|CES)\b")
+TECH_PATH = re.compile(r"/(tecnologia|tecnologias|tech|videojuegos|juegos|gaming|ciencia-y-tecnologia)/")
 
 FINANCE_TERMS = [
     "finanzas", "financiero", "financiera", "financieros", "financieras", "bolsa", "bolsas", "ibex", "ibex 35",
@@ -78,9 +76,7 @@ FINANCE_PATH = re.compile(r"/(finanzas|mercados|bolsa|cripto|criptomonedas|cinco
 # Palabras ambiguas que no se buscan sueltas: «oro» (medallas), «bono» (bono social), «app», «mando»,
 # «mario», «switch», «valve», «hacienda» (finca), «seguros», «credito» (créditos de película)…
 # se quedan fuera de las búsquedas por defecto y solo cuentan junto a otro término del mismo tema.
-_WEAK_TECH = {"app", "apps", "mando", "mario", "valve", "pokemon", "zelda", "meta ai", "intel", "amd", "windows", "gaming",
-              "steam", "twitch", "robot", "robots", "bateria", "dron", "drones", "internet", "chip", "chips", "movil",
-              "moviles", "streaming", "netflix", "spotify", "youtube", "amazon web services", "lanzamiento del juego"}
+_WEAK_TECH: set[str] = set()
 _WEAK_FINANCE = {"oro", "bono", "bonos", "hacienda", "seguros", "credito", "creditos", "banco", "bancos", "banca",
                  "inversion", "mercados", "ahorro", "deposito", "depositos", "prestamo", "prestamos", "impuesto",
                  "impuestos", "presupuestos", "deficit", "superavit", "petroleo", "barril", "fusion", "adquisicion",
@@ -91,6 +87,8 @@ _WEAK_SPORT = {"var", "barca", "betis", "serie a", "rally", "surf", "entrenador"
 
 def _compile(terms: list[str], skip: set[str] = frozenset()) -> re.Pattern:
     words = sorted({t for t in terms if t not in skip}, key=len, reverse=True)
+    if not words:
+        return re.compile(r"(?!)")  # nunca coincide
     return re.compile(r"(?<![\w])(" + "|".join(re.escape(t) for t in words) + r")(?![\w])")
 
 
@@ -134,7 +132,9 @@ def _get(a, name: str):
 
 
 def matches(topic: str, article) -> bool:
-    """¿Encaja este artículo (objeto o dict) con el tema? Titular, URL o resumen."""
+    """¿Encaja este artículo (objeto o dict) con el tema? Medio especializado, URL, titular o resumen."""
+    if topic == _get(article, "topic"):
+        return True  # el medio es especializado en este tema (p. ej. Xataka en tecnología)
     url = (_get(article, "url") or "").lower()
     if _PATH[topic].search(url):
         return True
@@ -145,6 +145,11 @@ def matches(topic: str, article) -> bool:
     summary_score = _score(_hits(topic, _get(article, "summary") or ""))
     title_score = _score(_hits(topic, _get(article, "title") or ""))
     return summary_score >= 4 or (summary_score >= 2 and title_score >= 1)
+
+
+def is_specialist(article) -> bool:
+    """Artículo de un medio especializado en un tema (no generalista)."""
+    return bool(_get(article, "topic"))
 
 
 def is_sport(article) -> bool:

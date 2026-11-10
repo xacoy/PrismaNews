@@ -24,6 +24,7 @@ class Article:
     author: str | None = None
     summary: str | None = None   # resumen corto del feed (<= 280 caracteres)
     image: str | None = None     # URL de la imagen del feed (solo enlazada)
+    topic: str | None = None     # tema del medio si es especializado ("tecnologia"); None si es generalista
 
     def to_dict(self) -> dict:
         d = asdict(self)
