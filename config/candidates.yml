@@ -27,3 +27,17 @@
 - {name: Canarias Ahora, scope: canario, home: "https://www.eldiario.es/canariasahora/", feeds: ["https://www.eldiario.es/rss/canariasahora/"]}
 - {name: Atlántico Hoy, scope: canario, home: "https://www.atlanticohoy.com/", feeds: ["https://www.atlanticohoy.com/feed/"]}
 - {name: RTVC, scope: canario, home: "https://www.rtvc.es/", feeds: ["https://www.rtvc.es/feed/", "https://www.rtvc.es/rss/", "https://www.rtvc.es/rss/feed.xml"]}
+# Medios especializados (topic: tecnologia): todo lo que publican va a la sección Tecnología.
+- {name: Xataka, scope: nacional, topic: tecnologia, home: "https://www.xataka.com/", feeds: ["https://feeds.weblogssl.com/xataka2", "https://www.xataka.com/feedburner.xml"]}
+- {name: Genbeta, scope: nacional, topic: tecnologia, home: "https://www.genbeta.com/", feeds: ["https://feeds.weblogssl.com/genbeta", "https://www.genbeta.com/feedburner.xml"]}
+- {name: Applesfera, scope: nacional, topic: tecnologia, home: "https://www.applesfera.com/", feeds: ["https://feeds.weblogssl.com/applesfera"]}
+- {name: Xataka Android, scope: nacional, topic: tecnologia, home: "https://www.xatakandroid.com/", feeds: ["https://feeds.weblogssl.com/xatakandroid"]}
+- {name: Vida Extra, scope: nacional, topic: tecnologia, home: "https://www.vidaextra.com/", feeds: ["https://feeds.weblogssl.com/vidaextra"]}
+- {name: Hipertextual, scope: nacional, topic: tecnologia, home: "https://hipertextual.com/", feeds: ["https://hipertextual.com/feed"]}
+- {name: Andro4all, scope: nacional, topic: tecnologia, home: "https://andro4all.com/", feeds: ["https://andro4all.com/feed"]}
+- {name: Muy Computer, scope: nacional, topic: tecnologia, home: "https://www.muycomputer.com/", feeds: ["https://www.muycomputer.com/feed/"]}
+- {name: Computer Hoy, scope: nacional, topic: tecnologia, home: "https://computerhoy.20minutos.es/", feeds: ["https://computerhoy.20minutos.es/rss"]}
+- {name: 3DJuegos, scope: nacional, topic: tecnologia, home: "https://www.3djuegos.com/", feeds: ["https://www.3djuegos.com/feed/", "https://www.3djuegos.com/rss/"]}
+- {name: Vandal, scope: nacional, topic: tecnologia, home: "https://vandal.elespanol.com/", feeds: ["https://vandal.elespanol.com/xml.cgi"]}
+- {name: MeriStation, scope: nacional, topic: tecnologia, home: "https://as.com/meristation/", feeds: ["https://as.com/meristation/feed/", "https://as.com/meristation/rss.xml"]}
+- {name: HobbyConsolas, scope: nacional, topic: tecnologia, home: "https://www.hobbyconsolas.com/", feeds: ["https://www.hobbyconsolas.com/rss", "https://www.hobbyconsolas.com/feed"]}
