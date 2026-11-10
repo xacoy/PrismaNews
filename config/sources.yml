@@ -175,3 +175,103 @@
   status: descartado
   checked: '2026-11-06'
   reason: /feed/ y /rss/ sin entradas; /rss/feed.xml HTTP 404
+- name: Xataka
+  url: https://feeds.weblogssl.com/xataka2
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 26
+  newest_age_h: 0.3
+- name: Genbeta
+  url: https://feeds.weblogssl.com/genbeta
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 16
+  newest_age_h: 1.0
+- name: Applesfera
+  url: https://feeds.weblogssl.com/applesfera
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 20
+  newest_age_h: 0.5
+- name: Xataka Android
+  url: https://feeds.weblogssl.com/xatakandroid
+  scope: nacional
+  topic: tecnologia
+  status: descartado
+  checked: '2026-11-10'
+  reason: https://feeds.weblogssl.com/xatakandroid -> feed inactivo (último hace 4056 h)
+- name: Vida Extra
+  url: https://feeds.weblogssl.com/vidaextra
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 20
+  newest_age_h: 0.5
+- name: Hipertextual
+  url: https://hipertextual.com/feed
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 15
+  newest_age_h: 0.8
+- name: Andro4all
+  url: https://andro4all.com/feed
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 15
+  newest_age_h: 0.5
+- name: Muy Computer
+  url: https://www.muycomputer.com/comments/feed/
+  scope: nacional
+  topic: tecnologia
+  status: descartado
+  checked: '2026-11-10'
+  reason: https://www.muycomputer.com/feed/ -> bloqueado por robots.txt; https://www.muycomputer.com/comments/feed/ -> bloqueado por robots.txt
+- name: Computer Hoy
+  url: https://computerhoy.20minutos.es/rss
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 75
+  newest_age_h: 0.9
+- name: 3DJuegos
+  url: https://www.3djuegos.com/rss/
+  scope: nacional
+  topic: tecnologia
+  status: descartado
+  checked: '2026-11-10'
+  reason: https://www.3djuegos.com/feed/ -> HTTP 404; https://www.3djuegos.com/rss/ -> HTTP 404
+- name: Vandal
+  url: https://vandal.elespanol.com/xml.cgi
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 30
+  newest_age_h: 0.6
+- name: MeriStation
+  url: https://as.com/meristation/rss.xml
+  scope: nacional
+  topic: tecnologia
+  status: descartado
+  checked: '2026-11-10'
+  reason: https://as.com/meristation/feed/ -> HTTP 404; https://as.com/meristation/rss.xml -> HTTP 404
+- name: HobbyConsolas
+  url: https://www.hobbyconsolas.com/rss
+  scope: nacional
+  topic: tecnologia
+  status: activo
+  checked: '2026-11-10'
+  entries_seen: 55
+  newest_age_h: 0.6

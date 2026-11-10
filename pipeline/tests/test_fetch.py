@@ -92,7 +92,8 @@ def test_fetch_all_filtra_ventana_de_48h_y_deduplica(monkeypatch):
 
 def test_load_sources_solo_activas():
     srcs = load_sources(str(FX.parents[2] / "config" / "sources.yml"))
-    assert len(srcs) == 20 and all(s["status"] == "activo" for s in srcs)
+    assert len(srcs) == 29 and all(s["status"] == "activo" for s in srcs)
+    assert sum(1 for s in srcs if s.get("topic") == "tecnologia") == 9  # medios especializados
     assert {s["scope"] for s in srcs} == {"nacional", "canario"}
 
 
